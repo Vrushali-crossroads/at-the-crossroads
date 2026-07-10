@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbf6ec;
+  --foreground: #1a1714;
+
+  /* palette (from the "Editorial Sun" mockup) */
+  --color-cream: #fbf6ec;
+  --color-ink: #1a1714;
+  --color-teal: #2b4e55;
+  --color-mango: #eba63a;
+  --color-mango-light: #f4c56b;
+  --color-white: #ffffff;
+
+  /* type scale (exact px pulled from the mockup, scaled fluidly) */
+  --text-eyebrow: 0.75rem; /* 12px, uppercase, wide letter-spacing labels */
+  --text-nav: 0.9375rem; /* 15px, buttons/nav */
+  --text-body: 1.125rem; /* 18px/1.62, Hanken Grotesk 400 */
+  --text-quote: 1.4375rem; /* 23px/1.34, Cormorant Garamond 500 pull-quotes */
+  --text-script-sm: clamp(1rem, 0.85rem + 0.6vw, 1.0625rem); /* 16-17px cursive accents */
+  --text-script-md: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem); /* ~26px cursive accents */
+  --text-script-lg: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem); /* ~30px cursive accents */
+  --text-h3: clamp(1.75rem, 1.4rem + 1.4vw, 2.125rem); /* 34px section subheads */
+  --text-h2: clamp(2rem, 1.5rem + 2vw, 2.5rem); /* 40px section headings */
+  --text-h1: clamp(2.5rem, 1.8rem + 3vw, 3.875rem); /* 62px hero headline */
+  --text-contact-link: clamp(1.75rem, 1.2rem + 2.5vw, 2.875rem); /* 28-46px closing mailto link */
+
+  /* fluid spacing (scales continuously with the viewport instead of snapping at breakpoints) */
+  --space-section-x: clamp(1.5rem, 1rem + 4vw, 7rem); /* nav + hero side padding, 24-112px */
+  --space-hero-gap: clamp(2rem, 1rem + 4vw, 4rem); /* hero column gap, 32-64px */
+  --space-section-y: clamp(3rem, 2rem + 4vw, 5.5rem); /* section top/bottom padding, 48-88px */
+  --space-grid-gap: clamp(1rem, 0.75rem + 1vw, 1.5rem); /* card grid gap, 16-24px */
+
+  /* Navbar is position:fixed, so scrolling content needs matching top padding.
+     Navbar measures its real rendered height into this var on mount; this is
+     just the pre-JS/first-paint fallback. */
+  --nav-h: 88px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cream: var(--color-cream);
+  --color-ink: var(--color-ink);
+  --color-teal: var(--color-teal);
+  --color-mango: var(--color-mango);
+  --color-mango-light: var(--color-mango-light);
+  --color-white: var(--color-white);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-script: var(--font-script);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.62;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+}
+
+h1 {
+  font-size: var(--text-h1);
+  line-height: 1.04;
+  letter-spacing: -0.005em;
+}
+
+h2 {
+  font-size: var(--text-h2);
+  line-height: 1.05;
+}
+
+h3 {
+  font-size: var(--text-h3);
+  line-height: 1.06;
+}
+
+.font-script {
+  font-family: var(--font-script), cursive;
+  font-weight: 400;
+  color: var(--color-mango);
+}
+
+.eyebrow {
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 700;
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-mango);
+}
+
+/* Entrance-animation starting states, baked into CSS (not just set via GSAP on
+   mount) so the server-rendered markup never paints fully visible before the
+   JS-driven timeline takes over — avoids a flash-of-visible-content on load. */
+.hero-word {
+  transform: translateY(110%) rotate(5deg);
+  filter: blur(6px);
+}
+
+.hero-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  filter: blur(6px);
+}
+
+.hero-spark {
+  opacity: 0;
+  transform: scale(0) rotate(-45deg);
+}
+
+.nav-reveal {
+  opacity: 0;
+  transform: translateY(-18px);
+}
+
+/* Generic scroll-reveal starting state, reused by sections below the hero. */
+.reveal-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  filter: blur(6px);
+}
+
+.reveal-thumb {
+  clip-path: inset(100% 0 0 0);
+}
+
+/* Subtle lift + shadow used on images/cards that want a premium hover response,
+   layered on top of any existing hover:scale utility already on the element. */
+.hover-elevate {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hover-elevate:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -20px rgba(26, 23, 20, 0.35);
+}
+
+/* Soft shadow expansion for magnetic buttons — scale is handled by GSAP
+   (useMagnetic) since it already owns the element's transform for the drag
+   effect; this class only owns box-shadow so the two never fight the same
+   CSS property. */
+.magnetic-btn {
+  transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.magnetic-btn.is-magnet-active {
+  box-shadow: 0 20px 40px -16px rgba(26, 23, 20, 0.45);
+}
+
+/* Soft scale + shadow expansion for non-magnetic pill/button CTAs. */
+.btn-pop {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-pop:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 16px 32px -14px rgba(26, 23, 20, 0.4);
+}
+.btn-pop:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Accessibility: fall back to an instant, static presentation for users who
+   have asked the OS for reduced motion. This is a CSS-only safety net for the
+   moment before JS hydrates (each component's GSAP timeline also checks
+   prefersReducedMotion() and skips motion/parallax entirely once mounted). */
+@media (prefers-reduced-motion: reduce) {
+  .hero-word,
+  .hero-fade,
+  .hero-spark,
+  .nav-reveal,
+  .reveal-fade,
+  .reveal-thumb {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+  }
+
+  .hover-elevate:hover,
+  .btn-pop:hover,
+  .btn-pop:active {
+    transform: none !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
