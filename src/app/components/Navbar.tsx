@@ -1,6 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
@@ -10,12 +12,28 @@ import { prefersReducedMotion } from "./usePrefersReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, useGSAP);
 
-const LINKS = [
-  { label: "Episodes", id: "episodes" },
-  { label: "Thoughts", id: "thoughts" },
-  { label: "About", id: "about" },
-  { label: "Collaborate", id: "collaborate" },
+type NavLink =
+  | { label: string; type: "route"; href: string }
+  | { label: string; type: "anchor"; id: string };
+
+const LINKS: NavLink[] = [
+  { label: "Episodes", type: "route", href: "/episodes" },
+  // { label: "Thoughts", type: "anchor", id: "thoughts" },
+  { label: "About", type: "route", href: "/about" },
+  { label: "Collaborate", type: "route", href: "/contact" },
 ];
+
+export function scrollToSection(id: string, navHeight: number) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const smoother = ScrollSmoother.get();
+  if (smoother && !prefersReducedMotion()) {
+    smoother.scrollTo(target, true, `top top+=${navHeight}`);
+  } else {
+    const y = target.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top: y, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  }
+}
 
 export default function Navbar() {
   const navRef = useRef<HTMLElement | null>(null);
@@ -23,23 +41,30 @@ export default function Navbar() {
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   useMagnetic(subscribeRef, 0.3);
 
   const handleNavClick = (id: string) => (e: React.MouseEvent) => {
+    if (!isHome) return; // let the browser navigate to /#id instead
     e.preventDefault();
-    const target = document.getElementById(id);
-    if (!target) return;
     const navHeight = navRef.current?.getBoundingClientRect().height ?? 0;
-    const smoother = ScrollSmoother.get();
-    if (smoother && !prefersReducedMotion()) {
-      smoother.scrollTo(target, true, `top top+=${navHeight}`);
-    } else {
-      const y = target.getBoundingClientRect().top + window.scrollY - navHeight;
-      window.scrollTo({ top: y, behavior: prefersReducedMotion() ? "auto" : "smooth" });
-    }
+    scrollToSection(id, navHeight);
     setIsOpen(false);
   };
+
+  // Landing on the home page with a #section hash (e.g. navigated in from
+  // another page) — scroll to it once ScrollSmoother has finished mounting.
+  useLayoutEffect(() => {
+    if (!isHome || typeof window === "undefined" || !window.location.hash) return;
+    const id = window.location.hash.slice(1);
+    const navHeight = navRef.current?.getBoundingClientRect().height ?? 0;
+    const raf = requestAnimationFrame(() => {
+      setTimeout(() => scrollToSection(id, navHeight), 60);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [isHome]);
 
   useLayoutEffect(() => {
     const el = navRef.current;
@@ -83,16 +108,18 @@ export default function Navbar() {
       });
 
       // Active-section indicator: highlight the nav link for whichever
-      // section currently occupies the middle of the viewport.
-      LINKS.forEach(({ id }) => {
-        const section = document.getElementById(id);
+      // section currently occupies the middle of the viewport (home page only —
+      // route-type links like "Episodes" are matched against pathname instead).
+      LINKS.forEach((link) => {
+        if (link.type !== "anchor") return;
+        const section = document.getElementById(link.id);
         if (!section) return;
         ScrollTrigger.create({
           trigger: section,
           start: "top 55%",
           end: "bottom 55%",
-          onEnter: () => setActiveId(id),
-          onEnterBack: () => setActiveId(id),
+          onEnter: () => setActiveId(link.id),
+          onEnterBack: () => setActiveId(link.id),
         });
       });
     },
@@ -135,31 +162,46 @@ export default function Navbar() {
       ref={navRef}
       className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-(--space-section-x) py-5 transition-[padding,box-shadow,background-color,backdrop-filter] duration-300 [&.nav-scrolled]:bg-cream/85 [&.nav-scrolled]:py-3.5 [&.nav-scrolled]:shadow-[0_8px_30px_-18px_rgba(26,23,20,0.4)] [&.nav-scrolled]:backdrop-blur-md"
     >
-      <a href="#" className="nav-reveal nav-logo flex flex-col leading-[0.85]">
+      <Link href="/" className="nav-reveal nav-logo flex flex-col leading-[0.85]">
         <span className="font-script ml-0.5 text-[17px]">at the</span>
         <span className="font-serif text-[17px] font-semibold tracking-[0.34em] text-ink">
           CROSSROADS
         </span>
-      </a>
+      </Link>
 
       <div className="hidden items-center gap-7 font-sans text-[13.5px] font-semibold text-ink/72 md:flex">
-        {LINKS.map((link) => (
-          <a
-            key={link.id}
-            href={`#${link.id}`}
-            onClick={handleNavClick(link.id)}
-            className={`nav-reveal nav-link group relative py-1 transition-colors duration-300 ${
-              activeId === link.id ? "text-ink" : ""
-            }`}
-          >
-            {link.label}
+        {LINKS.map((link) => {
+          const active = link.type === "route" ? pathname === link.href : isHome && activeId === link.id;
+          const className = `nav-reveal nav-link group relative py-1 transition-colors duration-300 ${
+            active ? "text-ink" : ""
+          }`;
+          const underline = (
             <span
               className={`absolute inset-x-0 -bottom-0.5 h-[1.5px] origin-left bg-mango transition-transform duration-300 ease-out group-hover:scale-x-100 ${
-                activeId === link.id ? "scale-x-100" : "scale-x-0"
+                active ? "scale-x-100" : "scale-x-0"
               }`}
             />
-          </a>
-        ))}
+          );
+          if (link.type === "route") {
+            return (
+              <Link key={link.href} href={link.href} className={className}>
+                {link.label}
+                {underline}
+              </Link>
+            );
+          }
+          return (
+            <Link
+              key={link.id}
+              href={isHome ? `#${link.id}` : `/#${link.id}`}
+              onClick={handleNavClick(link.id)}
+              className={className}
+            >
+              {link.label}
+              {underline}
+            </Link>
+          );
+        })}
         <button
           ref={subscribeRef}
           className="nav-reveal nav-cta magnetic-btn rounded-full bg-ink px-[18px] py-[11px] font-sans text-[13.5px] font-bold text-cream transition-colors hover:bg-teal"
@@ -197,18 +239,29 @@ export default function Navbar() {
         className="absolute left-0 right-0 top-full hidden flex-col gap-1 border-t border-ink/10 bg-cream px-(--space-section-x) py-5 shadow-[0_20px_30px_-20px_rgba(26,23,20,0.35)] md:hidden"
         style={{ visibility: "hidden" }}
       >
-        {LINKS.map((link) => (
-          <a
-            key={link.id}
-            href={`#${link.id}`}
-            onClick={handleNavClick(link.id)}
-            className={`mobile-link py-2.5 font-sans text-[15px] font-semibold ${
-              activeId === link.id ? "text-ink" : "text-ink/80"
-            }`}
-          >
-            {link.label}
-          </a>
-        ))}
+        {LINKS.map((link) => {
+          const active = link.type === "route" ? pathname === link.href : isHome && activeId === link.id;
+          const className = `mobile-link py-2.5 font-sans text-[15px] font-semibold ${
+            active ? "text-ink" : "text-ink/80"
+          }`;
+          if (link.type === "route") {
+            return (
+              <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)} className={className}>
+                {link.label}
+              </Link>
+            );
+          }
+          return (
+            <Link
+              key={link.id}
+              href={isHome ? `#${link.id}` : `/#${link.id}`}
+              onClick={handleNavClick(link.id)}
+              className={className}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
         <button className="mobile-link mt-2 self-start rounded-full bg-ink px-5 py-2.5 font-sans text-[13.5px] font-bold text-cream">
           Subscribe
         </button>

@@ -4,7 +4,7 @@ import LatestEpisodes from "./components/LatestEpisodes";
 import ThoughtsFeed from "./components/ThoughtsFeed";
 import AboutHost from "./components/AboutHost";
 import PastGuests from "./components/PastGuests";
-import Footer from "./components/Footer";
+import StickerFooter from "./components/StickerFooter";
 import SmoothScroll from "./components/SmoothScroll";
 import SoundwaveDivider from "./components/SoundwaveDivider";
 
@@ -20,7 +20,7 @@ export default function Home() {
         <AboutHost />
         <SoundwaveDivider />
         <PastGuests />
-        <Footer />
+        <StickerFooter />
       </SmoothScroll>
     </>
   );

@@ -2,44 +2,14 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
+import { EPISODES } from "../data/episodes";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
-
-type Episode = {
-  number: string;
-  title: string;
-  guest: string;
-  duration: string;
-  image: string;
-};
-
-const EPISODES: Episode[] = [
-  {
-    number: "EPISODE 09",
-    title: "Leadership Starts From Within — Fix This Before You Lead",
-    guest: "with Ravi Pratap",
-    duration: "59:50",
-    image: "/images/episodes/episode-09.jpg",
-  },
-  {
-    number: "EPISODE 08",
-    title: "The Cost of Animal Rescue — 350 Animals, Zero Help",
-    guest: "with Vikash Bafna",
-    duration: "1:17:04",
-    image: "/images/episodes/episode-08.jpg",
-  },
-  {
-    number: "EPISODE 06",
-    title: "Inside the Life of a Veterinarian",
-    guest: "with Dr. Sahil More",
-    duration: "52:42",
-    image: "/images/episodes/episode-06.jpg",
-  },
-];
 
 const STRIP_IMAGES = [
   "/images/episodes/strip-1.jpg",
@@ -182,19 +152,19 @@ export default function LatestEpisodes() {
           <div className="reveal-fade eyebrow mb-3">LATEST EPISODES</div>
           <h2 className="reveal-fade">Fresh from the studio</h2>
         </div>
-        <a
-          href="#"
+        <Link
+          href="/episodes"
           className="reveal-fade group inline-flex items-center gap-1.5 font-sans text-[13.5px] font-bold text-teal"
         >
-          All 55 episodes
+          All episodes
           <span className="transition-transform duration-300 group-hover:translate-x-1">
             &rarr;
           </span>
-        </a>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-(--space-grid-gap) sm:grid-cols-2 lg:grid-cols-3">
-        {EPISODES.map((ep) => (
+        {EPISODES.slice(0, 3).map((ep) => (
           <div
             key={ep.number}
             className="ep-card group overflow-hidden rounded-2xl border border-ink/10 bg-cream opacity-0 transition-shadow duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-24px_rgba(26,23,20,0.35)]"

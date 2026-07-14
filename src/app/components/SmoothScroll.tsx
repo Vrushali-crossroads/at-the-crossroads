@@ -14,6 +14,14 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   useGSAP(() => {
+    // ScrollSmoother reads whatever the current scroll position is the
+    // instant it's created and treats it as its baseline. On client-side
+    // navigation that can race with Next.js's own scroll-to-top, so it can
+    // initialize from a stale (nonzero) position and visibly animate back
+    // up to the real one — reads as the page scrolling on its own right
+    // after landing. Force it explicitly rather than trust the timing.
+    window.scrollTo(0, 0);
+
     // Reduced-motion users get native, unsmoothed scrolling — no inertia lag.
     const reduced = prefersReducedMotion();
     const smoother = ScrollSmoother.create({

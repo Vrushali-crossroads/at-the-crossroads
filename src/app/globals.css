@@ -35,6 +35,11 @@
      Navbar measures its real rendered height into this var on mount; this is
      just the pre-JS/first-paint fallback. */
   --nav-h: 88px;
+
+  /* Same idea, scoped to the /episodes "Sticker Studio" page's own fixed nav
+     (StickerNav.tsx) — kept separate from --nav-h above so the two pages'
+     navs never clobber each other's measured height. */
+  --sticker-nav-h: 84px;
 }
 
 @theme inline {
@@ -49,6 +54,15 @@
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
   --font-script: var(--font-script);
+}
+
+html {
+  /* GSAP inserts pin-spacers (for pinned ScrollTrigger sections) after the
+     browser has already scrolled a freshly-navigated page to the top.
+     Without this, the browser's scroll-anchoring feature "compensates" for
+     that layout shift by nudging the scroll position down on its own —
+     reads as the page auto-scrolling right after landing. */
+  overflow-anchor: none;
 }
 
 body {
@@ -86,6 +100,12 @@ h3 {
   font-family: var(--font-script), cursive;
   font-weight: 400;
   color: var(--color-mango);
+}
+
+/* "Sticker Studio" poster type, scoped to the /episodes archive page only —
+   see src/app/episodes/page.tsx. */
+.font-archivo {
+  font-family: var(--font-archivo), sans-serif;
 }
 
 .eyebrow {
