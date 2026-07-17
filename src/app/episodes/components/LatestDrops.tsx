@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
-import { EPISODES } from "../../data/episodes";
+import type { Episode } from "@/lib/episodes";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -18,20 +18,20 @@ const NUMBER_BADGE_CLASSES = [
 
 const CARD_ROTATION = [-1.4, 1.2, -1];
 
-function handleCardEnter(e: React.MouseEvent<HTMLDivElement>) {
+function handleCardEnter(e: React.MouseEvent<HTMLAnchorElement>) {
   if (prefersReducedMotion()) return;
   gsap.to(e.currentTarget, { y: -8, duration: 0.35, ease: "power2.out" });
 }
 
-function handleCardLeave(e: React.MouseEvent<HTMLDivElement>) {
+function handleCardLeave(e: React.MouseEvent<HTMLAnchorElement>) {
   if (prefersReducedMotion()) return;
   gsap.to(e.currentTarget, { y: 0, duration: 0.45, ease: "power2.out" });
 }
 
-export default function LatestDrops() {
+export default function LatestDrops({ episodes }: Readonly<{ episodes: Episode[] }>) {
   const rootRef = useRef<HTMLElement | null>(null);
-  const big = EPISODES.slice(0, 3);
-  const small = EPISODES.slice(3, 7);
+  const big = episodes.slice(0, 3);
+  const small = episodes.slice(3, 7);
 
   useGSAP(
     () => {
@@ -104,9 +104,12 @@ export default function LatestDrops() {
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {big.map((ep, i) => (
-          <div
-            key={ep.number}
-            className="ld-card group overflow-hidden rounded-[14px] border-2 border-[#161310] bg-white opacity-0 shadow-[6px_6px_0_#161310] transition-shadow duration-300 hover:shadow-[9px_9px_0_#161310,0_0_28px_rgba(255,194,31,0.45)] will-change-transform"
+          <a
+            key={ep.id}
+            href={ep.link || undefined}
+            target={ep.link ? "_blank" : undefined}
+            rel={ep.link ? "noopener noreferrer" : undefined}
+            className="ld-card group block overflow-hidden rounded-[14px] border-2 border-[#161310] bg-white opacity-0 shadow-[6px_6px_0_#161310] transition-shadow duration-300 hover:shadow-[9px_9px_0_#161310,0_0_28px_rgba(255,194,31,0.45)] will-change-transform"
             style={{ transform: "translateY(50px)" }}
             onMouseEnter={handleCardEnter}
             onMouseLeave={handleCardLeave}
@@ -144,15 +147,18 @@ export default function LatestDrops() {
               </div>
               <div className="font-sans text-[13px] font-semibold text-[#161310]/55">{ep.guest}</div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
 
       <div className="mt-3.5 grid grid-cols-2 gap-3.5 sm:grid-cols-4">
         {small.map((ep) => (
-          <div
-            key={ep.number}
-            className="ld-strip relative aspect-video overflow-hidden rounded-[10px] border-2 border-[#161310] opacity-0 will-change-transform"
+          <a
+            key={ep.id}
+            href={ep.link || undefined}
+            target={ep.link ? "_blank" : undefined}
+            rel={ep.link ? "noopener noreferrer" : undefined}
+            className="ld-strip relative block aspect-video overflow-hidden rounded-[10px] border-2 border-[#161310] opacity-0 will-change-transform"
             style={{ transform: "translateY(30px)" }}
           >
             <div className="ld-thumb-wrap absolute inset-0 will-change-transform">
@@ -164,7 +170,7 @@ export default function LatestDrops() {
                 sizes="(min-width: 640px) 25vw, 50vw"
               />
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </section>

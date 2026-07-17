@@ -1,5 +1,3 @@
-"use client";
-
 import { Archivo } from "next/font/google";
 import StickerNav from "../components/StickerNav";
 import StickerFooter from "../components/StickerFooter";
@@ -12,6 +10,7 @@ import Newsletter from "./components/Newsletter";
 import PastGuestsPills from "./components/PastGuestsPills";
 import Collab from "./components/Collab";
 import Contact from "./components/Contact";
+import { getEpisodes } from "@/lib/episodes";
 
 // "Sticker Studio" is a deliberate, punchier departure from the rest of the
 // site's Editorial Sun language — bright yellow, black poster type, hard
@@ -23,12 +22,14 @@ const archivo = Archivo({
 });
 
 export default function EpisodesPage() {
+  const episodes = getEpisodes();
+
   return (
     <div className={`${archivo.variable} bg-[#FFF7DA] text-[#161310]`}>
       <StickerNav />
       <StickerHero />
       <MarqueeTape />
-      <LatestDrops />
+      <LatestDrops episodes={episodes} />
       <ThoughtsSection />
       <AboutSection />
       <Newsletter />

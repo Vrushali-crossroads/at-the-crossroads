@@ -7,14 +7,17 @@ import SunThoughts from "./components/SunThoughts";
 import SunHost from "./components/SunHost";
 import SunNewsletter from "./components/SunNewsletter";
 import SunGuests from "./components/SunGuests";
+import { getEpisodes } from "@/lib/episodes";
 
 export default function AboutPage() {
+  const episodes = getEpisodes();
+
   return (
     <>
       <Navbar />
       <SmoothScroll>
         <SunHero />
-        <SunEpisodes />
+        <SunEpisodes episodes={episodes} />
         <SunThoughts />
         <SunHost />
         <SunNewsletter />

@@ -7,14 +7,17 @@ import PastGuests from "./components/PastGuests";
 import StickerFooter from "./components/StickerFooter";
 import SmoothScroll from "./components/SmoothScroll";
 import SoundwaveDivider from "./components/SoundwaveDivider";
+import { getEpisodes } from "@/lib/episodes";
 
 export default function Home() {
+  const episodes = getEpisodes();
+
   return (
     <>
       <Navbar />
       <SmoothScroll>
         <Hero />
-        <LatestEpisodes />
+        <LatestEpisodes episodes={episodes} />
         <SoundwaveDivider />
         <ThoughtsFeed />
         <AboutHost />

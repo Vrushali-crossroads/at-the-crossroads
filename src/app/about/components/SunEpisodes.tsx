@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
-import { EPISODES } from "../../data/episodes";
+import type { Episode } from "@/lib/episodes";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -14,9 +14,11 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 // left, center, right — for a touch of directional variety while scrolling.
 const CARD_X = [-70, 0, 70];
 
-export default function SunEpisodes() {
+export default function SunEpisodes({
+  episodes: allEpisodes,
+}: Readonly<{ episodes: Episode[] }>) {
   const rootRef = useRef<HTMLElement | null>(null);
-  const episodes = EPISODES.slice(0, 3);
+  const episodes = allEpisodes.slice(0, 3);
 
   useGSAP(
     () => {
@@ -79,9 +81,12 @@ export default function SunEpisodes() {
 
       <div className="grid grid-cols-1 gap-5.5 sm:grid-cols-3">
         {episodes.map((ep, i) => (
-          <div
-            key={ep.number}
-            className="se-card opacity-0"
+          <a
+            key={ep.id}
+            href={ep.link || undefined}
+            target={ep.link ? "_blank" : undefined}
+            rel={ep.link ? "noopener noreferrer" : undefined}
+            className="se-card block opacity-0"
             style={{ transform: `translate(${CARD_X[i % CARD_X.length]}px, 36px) scale(0.96)` }}
           >
             <div className="hover-elevate relative aspect-video overflow-hidden rounded-2xl shadow-[0_16px_34px_-20px_rgba(24,22,18,0.5)]">
@@ -107,7 +112,7 @@ export default function SunEpisodes() {
               </div>
               <div className="font-sans text-[13px] text-ink/50">{ep.guest}</div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </section>

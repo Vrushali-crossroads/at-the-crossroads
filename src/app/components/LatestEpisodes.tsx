@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
-import { EPISODES } from "../data/episodes";
+import type { Episode } from "@/lib/episodes";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -26,7 +26,7 @@ function PlayIcon({ className = "" }: { className?: string }) {
   );
 }
 
-export default function LatestEpisodes() {
+export default function LatestEpisodes({ episodes }: Readonly<{ episodes: Episode[] }>) {
   const rootRef = useRef<HTMLElement | null>(null);
 
   useGSAP(
@@ -164,10 +164,13 @@ export default function LatestEpisodes() {
       </div>
 
       <div className="grid grid-cols-1 gap-(--space-grid-gap) sm:grid-cols-2 lg:grid-cols-3">
-        {EPISODES.slice(0, 3).map((ep) => (
-          <div
-            key={ep.number}
-            className="ep-card group overflow-hidden rounded-2xl border border-ink/10 bg-cream opacity-0 transition-shadow duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-24px_rgba(26,23,20,0.35)]"
+        {episodes.slice(0, 3).map((ep) => (
+          <a
+            key={ep.id}
+            href={ep.link || undefined}
+            target={ep.link ? "_blank" : undefined}
+            rel={ep.link ? "noopener noreferrer" : undefined}
+            className="ep-card group block overflow-hidden rounded-2xl border border-ink/10 bg-cream opacity-0 transition-shadow duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-24px_rgba(26,23,20,0.35)]"
             style={{ transform: "translateY(40px) scale(0.96) rotate(-1.5deg)" }}
           >
             <div className="relative aspect-video overflow-hidden">
@@ -200,7 +203,7 @@ export default function LatestEpisodes() {
               </div>
               <div className="font-sans text-[13px] text-ink/55">{ep.guest}</div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
 

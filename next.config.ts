@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
   images: { unoptimized: true },
-  /* config options here */
+  experimental: {
+    // Default is 1MB, too small for episode cover image uploads.
+    serverActions: { bodySizeLimit: "8mb" },
+  },
 };
 
 export default nextConfig;

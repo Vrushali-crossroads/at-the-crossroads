@@ -1,24 +1,84 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useMagnetic } from "../../components/useMagnetic";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
+import { submitContactForm } from "../actions";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const REASONS = ["Guest pitch", "Brand partnership", "Speaking enquiry", "Something else"];
 
+const EMPTY_FORM = { name: "", email: "", reason: REASONS[0], message: "" };
+
+// How long the "ON AIR" confirmation stays up before the form reappears.
+const SUCCESS_DISPLAY_MS = Number(process.env.NEXT_PUBLIC_CONTACT_SUCCESS_DURATION_MS) || 6000;
+
 export default function ContactForm() {
   const rootRef = useRef<HTMLElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const submitRef = useRef<HTMLButtonElement | null>(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", reason: REASONS[0], message: "" });
+  const successBlockRef = useRef<HTMLDivElement | null>(null);
+  const hasResetRef = useRef(false);
+  const [state, formAction, pending] = useActionState(submitContactForm, undefined);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useMagnetic(submitRef, 0.2);
+
+  // Auto-return to a blank form a few seconds after the confirmation shows.
+  useEffect(() => {
+    if (!state?.success) return;
+    setShowConfirmation(true);
+
+    const resetToForm = () => {
+      // The success view's infinite ring-radiate / spark-twinkle loops don't
+      // get cleaned up by the entrance effect's own scope (only a new
+      // submission does that) — kill them explicitly before it unmounts.
+      gsap.killTweensOf(".cf-ring");
+      gsap.killTweensOf(".cf-success-spark");
+      hasResetRef.current = true;
+      setShowConfirmation(false);
+      setForm(EMPTY_FORM);
+    };
+
+    const timer = setTimeout(() => {
+      if (prefersReducedMotion() || !successBlockRef.current) {
+        resetToForm();
+        return;
+      }
+      gsap.to(successBlockRef.current, {
+        opacity: 0,
+        y: -16,
+        scale: 0.96,
+        duration: 0.45,
+        ease: "power2.in",
+        onComplete: resetToForm,
+      });
+    }, SUCCESS_DISPLAY_MS);
+
+    return () => clearTimeout(timer);
+  }, [state]);
+
+  // Form reappearing after auto-reset — skipped on first mount since the
+  // scroll-triggered card entrance below already handles that.
+  useGSAP(
+    () => {
+      if (showConfirmation || !hasResetRef.current) return;
+
+      if (prefersReducedMotion()) {
+        gsap.set(".cf-field", { clearProps: "all", opacity: 1, y: 0 });
+        return;
+      }
+
+      gsap.set(".cf-field", { opacity: 0, y: 14 });
+      gsap.to(".cf-field", { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: "power3.out" });
+    },
+    { scope: cardRef, dependencies: [showConfirmation] }
+  );
 
   useGSAP(
     () => {
@@ -44,16 +104,97 @@ export default function ContactForm() {
     { scope: rootRef }
   );
 
+  // "Sending" cue: a little audio waveform + recording pulse inside the
+  // button, like the message is being broadcast out.
+  useGSAP(
+    () => {
+      if (!pending || prefersReducedMotion()) {
+        gsap.set(".cf-wave-bar", { scaleY: 1 });
+        gsap.set(".cf-rec-dot", { opacity: 1, scale: 1 });
+        return;
+      }
+
+      const bars = gsap.utils.toArray<HTMLElement>(".cf-wave-bar");
+      bars.forEach((bar, i) => {
+        gsap.to(bar, {
+          scaleY: 1.9 + (i % 3) * 0.5,
+          duration: 0.32 + (i % 3) * 0.1,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: i * 0.07,
+        });
+      });
+
+      gsap.to(".cf-rec-dot", {
+        opacity: 0.3,
+        scale: 0.75,
+        duration: 0.55,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    },
+    { scope: rootRef, dependencies: [pending] }
+  );
+
+  // Success entrance: play-button badge pops in, badge/copy reveal, sparks
+  // twinkle, then broadcast rings radiate outward on loop — "you're on air."
+  useGSAP(
+    () => {
+      if (!state?.success) return;
+
+      if (prefersReducedMotion()) {
+        gsap.set(
+          [".cf-success-check", ".cf-success-badge", ".cf-success-heading", ".cf-success-copy", ".cf-success-spark"],
+          { clearProps: "all", opacity: 1, scale: 1, y: 0, rotate: 0, filter: "none" }
+        );
+        gsap.set(".cf-ring", { opacity: 0 });
+        return;
+      }
+
+      gsap.set(".cf-success-check", { scale: 0 });
+      gsap.set(".cf-success-badge", { scale: 0, rotate: 8 });
+      gsap.set([".cf-success-heading", ".cf-success-copy"], { opacity: 0, y: 16, filter: "blur(6px)" });
+      gsap.set(".cf-success-spark", { scale: 0, opacity: 0, rotate: -45 });
+      gsap.set(".cf-ring", { opacity: 0 });
+
+      const tl = gsap.timeline();
+      tl.to(".cf-success-check", { scale: 1, duration: 0.55, ease: "back.out(2.6)" })
+        .to(".cf-success-badge", { scale: 1, rotate: -1, duration: 0.6, ease: "elastic.out(1, 0.6)" }, "-=0.2")
+        .to(".cf-success-heading", { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, "-=0.25")
+        .to(".cf-success-copy", { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, "-=0.3")
+        .to(
+          ".cf-success-spark",
+          { scale: 1, opacity: 1, rotate: 0, duration: 0.5, stagger: 0.12, ease: "back.out(2.6)" },
+          "-=0.4"
+        )
+        .call(() => {
+          gsap.fromTo(
+            ".cf-ring",
+            { scale: 0.7, opacity: 0.7 },
+            { scale: 1.9, opacity: 0, duration: 1.8, repeat: -1, stagger: 0.6, ease: "power1.out" }
+          );
+        });
+
+      gsap.to(".cf-success-spark", {
+        scale: 1.15,
+        opacity: 0.75,
+        duration: 1.6,
+        repeat: -1,
+        yoyo: true,
+        stagger: 0.3,
+        ease: "sine.inOut",
+        delay: 1.2,
+      });
+    },
+    { scope: cardRef, dependencies: [state?.success] }
+  );
+
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       setForm((f) => ({ ...f, [field]: e.target.value }));
     };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!form.name || !form.email || !form.message) return;
-    setSubmitted(true);
-  };
 
   const inputClass =
     "rounded-xl border-2 border-[#161310]/15 bg-[#FFF7DA] px-4 py-3 font-sans text-[15px] text-[#161310] placeholder:text-[#161310]/40 focus:border-[#161310] focus:outline-none";
@@ -64,25 +205,62 @@ export default function ContactForm() {
         ref={cardRef}
         className="mx-auto max-w-2xl rounded-[18px] border-2 border-[#161310] bg-white p-8 shadow-[8px_8px_0_#161310] sm:p-11"
       >
-        {submitted ? (
-          <div className="py-10 text-center">
-            <div className="mb-3 inline-block -rotate-1 rounded-[7px] bg-[#FFC21F] px-2.5 py-1.5 font-archivo text-xs font-black text-[#161310]">
-              MESSAGE SENT
+        {showConfirmation ? (
+          <div ref={successBlockRef} className="relative py-10 text-center">
+            <svg
+              aria-hidden
+              className="cf-success-spark absolute left-[16%] top-1 w-5 text-[#2B4E55]"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor" />
+            </svg>
+            <svg
+              aria-hidden
+              className="cf-success-spark absolute right-[14%] top-5 w-4 text-[#FFC21F]"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor" />
+            </svg>
+            <svg
+              aria-hidden
+              className="cf-success-spark absolute left-[24%] bottom-2 w-3 text-[#161310]/40"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor" />
+            </svg>
+
+            <div className="cf-success-check relative mx-auto mb-4 flex h-16 w-16 items-center justify-center">
+              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-[#FFC21F]" aria-hidden />
+              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-[#FFC21F]" aria-hidden />
+              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-[#FFC21F]" aria-hidden />
+              <span className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#161310] bg-[#FFC21F]">
+                <svg viewBox="0 0 16 16" className="ml-0.5 h-6 w-6 fill-[#161310]" aria-hidden>
+                  <path d="M4 2.5v11l10-5.5-10-5.5z" />
+                </svg>
+              </span>
             </div>
-            <h3 className="mb-3 font-archivo text-2xl font-black text-[#161310]">
+
+            <div className="cf-success-badge mb-3 inline-block -rotate-1 rounded-[7px] bg-[#FFC21F] px-2.5 py-1.5 font-archivo text-xs font-black text-[#161310]">
+              ON AIR
+            </div>
+            <h3 className="cf-success-heading mb-3 font-archivo text-2xl font-black text-[#161310]">
               Thanks, {form.name.split(" ")[0]} — got it.
             </h3>
-            <p className="mx-auto max-w-sm font-sans text-[#161310]/66">
-              I read every message myself and reply within a few days. Talk soon.
+            <p className="cf-success-copy mx-auto max-w-sm font-sans text-[#161310]/66">
+              Your message just went out live to the studio. I read every note myself and reply within a few days.
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <form action={formAction} className="flex flex-col gap-5">
+            <div className="cf-field grid grid-cols-1 gap-5 sm:grid-cols-2">
               <label className="flex flex-col gap-2">
                 <span className="font-sans text-[13px] font-bold text-[#161310]/60">Name</span>
                 <input
                   type="text"
+                  name="name"
                   required
                   value={form.name}
                   onChange={handleChange("name")}
@@ -94,6 +272,7 @@ export default function ContactForm() {
                 <span className="font-sans text-[13px] font-bold text-[#161310]/60">Email</span>
                 <input
                   type="email"
+                  name="email"
                   required
                   value={form.email}
                   onChange={handleChange("email")}
@@ -103,9 +282,9 @@ export default function ContactForm() {
               </label>
             </div>
 
-            <label className="flex flex-col gap-2">
+            <label className="cf-field flex flex-col gap-2">
               <span className="font-sans text-[13px] font-bold text-[#161310]/60">This is about</span>
-              <select value={form.reason} onChange={handleChange("reason")} className={inputClass}>
+              <select name="reason" value={form.reason} onChange={handleChange("reason")} className={inputClass}>
                 {REASONS.map((r) => (
                   <option key={r} value={r}>
                     {r}
@@ -114,9 +293,10 @@ export default function ContactForm() {
               </select>
             </label>
 
-            <label className="flex flex-col gap-2">
+            <label className="cf-field flex flex-col gap-2">
               <span className="font-sans text-[13px] font-bold text-[#161310]/60">Message</span>
               <textarea
+                name="message"
                 required
                 rows={5}
                 value={form.message}
@@ -126,12 +306,29 @@ export default function ContactForm() {
               />
             </label>
 
+            {state?.error && (
+              <p role="alert" className="font-sans text-sm font-semibold text-red-600">
+                {state.error}
+              </p>
+            )}
+
             <button
               ref={submitRef}
               type="submit"
-              className="magnetic-btn mt-1 self-start rounded-full border-2 border-[#161310] bg-[#FFC21F] px-8 py-4 font-archivo text-sm font-black text-[#161310] shadow-[4px_4px_0_#161310]"
+              disabled={pending}
+              className="cf-field magnetic-btn mt-1 flex cursor-pointer items-center gap-2 self-start rounded-full border-2 border-[#161310] bg-[#FFC21F] px-8 py-4 font-archivo text-sm font-black text-[#161310] shadow-[4px_4px_0_#161310] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              SEND MESSAGE
+              {pending && <span className="cf-rec-dot h-2 w-2 shrink-0 rounded-full bg-[#161310]" aria-hidden />}
+              {pending ? "BROADCASTING" : "SEND MESSAGE"}
+              {pending && (
+                <span className="flex h-4 items-end gap-0.75" aria-hidden>
+                  <span className="cf-wave-bar h-1.5 w-0.75 origin-bottom rounded-full bg-[#161310]" />
+                  <span className="cf-wave-bar h-2.5 w-0.75 origin-bottom rounded-full bg-[#161310]" />
+                  <span className="cf-wave-bar h-1 w-0.75 origin-bottom rounded-full bg-[#161310]" />
+                  <span className="cf-wave-bar h-3 w-0.75 origin-bottom rounded-full bg-[#161310]" />
+                  <span className="cf-wave-bar h-1.5 w-0.75 origin-bottom rounded-full bg-[#161310]" />
+                </span>
+              )}
             </button>
           </form>
         )}
