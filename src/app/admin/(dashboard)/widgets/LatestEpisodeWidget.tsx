@@ -1,8 +1,8 @@
 import { getEpisodes } from "@/lib/episodes";
 import StatCard from "../../components/StatCard";
 
-export default function LatestEpisodeWidget() {
-  const [latest] = getEpisodes();
+export default async function LatestEpisodeWidget() {
+  const [latest] = await getEpisodes();
 
   return (
     <StatCard

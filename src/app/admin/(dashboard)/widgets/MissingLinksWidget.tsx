@@ -1,8 +1,8 @@
 import { getEpisodes } from "@/lib/episodes";
 import StatCard from "../../components/StatCard";
 
-export default function MissingLinksWidget() {
-  const episodes = getEpisodes();
+export default async function MissingLinksWidget() {
+  const episodes = await getEpisodes();
   const missing = episodes.filter((ep) => !ep.link).length;
 
   return (

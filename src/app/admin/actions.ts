@@ -22,7 +22,7 @@ export async function loginAction(
   const username = String(formData.get("username") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  const admin = findAdminByUsername(username);
+  const admin = await findAdminByUsername(username);
   if (!admin || !verifyPassword(password, admin.passwordHash)) {
     return { error: "Invalid username or password." };
   }
@@ -95,7 +95,7 @@ export async function createEpisodeAction(
   const error = validateEpisodeInput(data);
   if (error) return { error };
 
-  createEpisode(data);
+  await createEpisode(data);
   revalidateEpisodePages();
   return { success: true };
 }
@@ -117,13 +117,13 @@ export async function updateEpisodeAction(
   const error = validateEpisodeInput(data);
   if (error) return { error };
 
-  updateEpisode(id, data);
+  await updateEpisode(id, data);
   revalidateEpisodePages();
   return { success: true };
 }
 
 export async function deleteEpisodeAction(id: number): Promise<void> {
   await requireSession();
-  deleteEpisode(id);
+  await deleteEpisode(id);
   revalidateEpisodePages();
 }

@@ -21,8 +21,8 @@ const archivo = Archivo({
   variable: "--font-archivo",
 });
 
-export default function EpisodesPage() {
-  const episodes = getEpisodes();
+export default async function EpisodesPage() {
+  const episodes = await getEpisodes();
 
   return (
     <div className={`${archivo.variable} bg-[#FFF7DA] text-[#161310]`}>

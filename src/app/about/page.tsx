@@ -9,8 +9,8 @@ import SunNewsletter from "./components/SunNewsletter";
 import SunGuests from "./components/SunGuests";
 import { getEpisodes } from "@/lib/episodes";
 
-export default function AboutPage() {
-  const episodes = getEpisodes();
+export default async function AboutPage() {
+  const episodes = await getEpisodes();
 
   return (
     <>

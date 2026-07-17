@@ -1,7 +1,4 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-
-const UPLOAD_DIR = path.join(process.cwd(), "public", "images", "episodes");
+import { put } from "@vercel/blob";
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
@@ -14,14 +11,10 @@ export async function saveEpisodeImage(file: File): Promise<string> {
     throw new Error("Unsupported image type. Use JPEG, PNG, WebP, or GIF.");
   }
 
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
+  const blob = await put(`episodes/${sanitizeFilename(file.name)}`, file, {
+    access: "public",
+    addRandomSuffix: true,
+  });
 
-  const ext = path.extname(file.name) || ".jpg";
-  const base = sanitizeFilename(path.basename(file.name, ext)).slice(0, 60) || "episode";
-  const filename = `${Date.now()}-${base}${ext}`;
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(path.join(UPLOAD_DIR, filename), buffer);
-
-  return `/images/episodes/${filename}`;
+  return blob.url;
 }

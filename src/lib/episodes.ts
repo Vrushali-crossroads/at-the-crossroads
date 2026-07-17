@@ -1,4 +1,5 @@
-import { db } from "./db";
+import type { Row } from "@libsql/client";
+import { getDb } from "./db";
 
 export type Episode = {
   id: number;
@@ -19,45 +20,60 @@ export type EpisodeInput = {
   link: string;
 };
 
-// node:sqlite returns rows as null-prototype objects, which React rejects
-// when passing data from a Server Component to a Client Component — spread
-// them into plain objects here so every caller gets serializable data.
-
-export function getEpisodes(): Episode[] {
-  const rows = db
-    .prepare(
-      "SELECT id, number, title, guest, duration, image, link FROM episodes ORDER BY sort_order DESC"
-    )
-    .all() as Episode[];
-  return rows.map((row) => ({ ...row }));
-}
-
-export function getEpisodeById(id: number): Episode | undefined {
-  const row = db
-    .prepare(
-      "SELECT id, number, title, guest, duration, image, link FROM episodes WHERE id = ?"
-    )
-    .get(id) as Episode | undefined;
-  return row ? { ...row } : undefined;
-}
-
-export function createEpisode(data: EpisodeInput): void {
-  const row = db.prepare("SELECT MAX(sort_order) as maxOrder FROM episodes").get() as {
-    maxOrder: number | null;
+// libsql Row objects aren't guaranteed plain objects (they support both
+// array- and name-based access), so map them explicitly into plain objects
+// — needed both for correctness and because React rejects non-plain objects
+// crossing the Server -> Client Component boundary.
+function toEpisode(row: Row): Episode {
+  return {
+    id: Number(row.id),
+    number: String(row.number),
+    title: String(row.title),
+    guest: String(row.guest),
+    duration: String(row.duration),
+    image: String(row.image),
+    link: String(row.link),
   };
-  const nextOrder = (row.maxOrder ?? 0) + 1;
-
-  db.prepare(
-    "INSERT INTO episodes (number, title, guest, duration, image, link, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)"
-  ).run(data.number, data.title, data.guest, data.duration, data.image, data.link, nextOrder);
 }
 
-export function updateEpisode(id: number, data: EpisodeInput): void {
-  db.prepare(
-    "UPDATE episodes SET number = ?, title = ?, guest = ?, duration = ?, image = ?, link = ? WHERE id = ?"
-  ).run(data.number, data.title, data.guest, data.duration, data.image, data.link, id);
+export async function getEpisodes(): Promise<Episode[]> {
+  const db = await getDb();
+  const result = await db.execute(
+    "SELECT id, number, title, guest, duration, image, link FROM episodes ORDER BY sort_order DESC"
+  );
+  return result.rows.map(toEpisode);
 }
 
-export function deleteEpisode(id: number): void {
-  db.prepare("DELETE FROM episodes WHERE id = ?").run(id);
+export async function getEpisodeById(id: number): Promise<Episode | undefined> {
+  const db = await getDb();
+  const result = await db.execute({
+    sql: "SELECT id, number, title, guest, duration, image, link FROM episodes WHERE id = ?",
+    args: [id],
+  });
+  return result.rows[0] ? toEpisode(result.rows[0]) : undefined;
+}
+
+export async function createEpisode(data: EpisodeInput): Promise<void> {
+  const db = await getDb();
+  const maxResult = await db.execute("SELECT MAX(sort_order) as maxOrder FROM episodes");
+  const maxOrder = maxResult.rows[0]?.maxOrder;
+  const nextOrder = (maxOrder == null ? 0 : Number(maxOrder)) + 1;
+
+  await db.execute({
+    sql: "INSERT INTO episodes (number, title, guest, duration, image, link, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    args: [data.number, data.title, data.guest, data.duration, data.image, data.link, nextOrder],
+  });
+}
+
+export async function updateEpisode(id: number, data: EpisodeInput): Promise<void> {
+  const db = await getDb();
+  await db.execute({
+    sql: "UPDATE episodes SET number = ?, title = ?, guest = ?, duration = ?, image = ?, link = ? WHERE id = ?",
+    args: [data.number, data.title, data.guest, data.duration, data.image, data.link, id],
+  });
+}
+
+export async function deleteEpisode(id: number): Promise<void> {
+  const db = await getDb();
+  await db.execute({ sql: "DELETE FROM episodes WHERE id = ?", args: [id] });
 }

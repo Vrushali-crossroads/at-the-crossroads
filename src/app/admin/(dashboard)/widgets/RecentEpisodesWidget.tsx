@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { getEpisodes } from "@/lib/episodes";
 
-export default function RecentEpisodesWidget() {
-  const episodes = getEpisodes().slice(0, 5);
+export default async function RecentEpisodesWidget() {
+  const episodes = (await getEpisodes()).slice(0, 5);
 
   return (
     <div className="rounded-2xl border border-ink/10 bg-white p-6">

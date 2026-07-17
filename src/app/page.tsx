@@ -9,8 +9,8 @@ import SmoothScroll from "./components/SmoothScroll";
 import SoundwaveDivider from "./components/SoundwaveDivider";
 import { getEpisodes } from "@/lib/episodes";
 
-export default function Home() {
-  const episodes = getEpisodes();
+export default async function Home() {
+  const episodes = await getEpisodes();
 
   return (
     <>

@@ -1,60 +1,54 @@
-import fs from "node:fs";
-import path from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import { createClient, type Client } from "@libsql/client";
 import { hashPassword } from "./password";
 
-const dataDir = path.join(process.cwd(), "data");
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
+// Cached across warm invocations (and across dev-server hot-reloads) so we
+// don't reconnect to Turso on every call.
+const globalForDb = globalThis as unknown as { __atCrossroadsDb?: Promise<Client> };
 
-// Reused across hot-reloads in dev so we don't reopen the file on every edit.
-const globalForDb = globalThis as unknown as { __atCrossroadsDb?: DatabaseSync };
-
-export const db =
-  globalForDb.__atCrossroadsDb ?? new DatabaseSync(path.join(dataDir, "app.db"));
-
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.__atCrossroadsDb = db;
-}
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS episodes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    number TEXT NOT NULL,
-    title TEXT NOT NULL,
-    guest TEXT NOT NULL,
-    duration TEXT NOT NULL,
-    image TEXT NOT NULL,
-    link TEXT NOT NULL DEFAULT '',
-    sort_order INTEGER NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS admin_users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL
-  );
-`);
-
-migrateAddLinkColumn();
-seedAdminUser();
-seedEpisodes();
-
-// Covers DBs created before the `link` column existed.
-function migrateAddLinkColumn() {
-  const columns = db.prepare("PRAGMA table_info(episodes)").all() as { name: string }[];
-  const hasLink = columns.some((column) => column.name === "link");
-  if (!hasLink) {
-    db.exec("ALTER TABLE episodes ADD COLUMN link TEXT NOT NULL DEFAULT ''");
+export function getDb(): Promise<Client> {
+  if (!globalForDb.__atCrossroadsDb) {
+    globalForDb.__atCrossroadsDb = initDb();
   }
+  return globalForDb.__atCrossroadsDb;
 }
 
-function seedAdminUser() {
-  const row = db.prepare("SELECT COUNT(*) as count FROM admin_users").get() as {
-    count: number;
-  };
-  if (row.count > 0) return;
+async function initDb(): Promise<Client> {
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+  if (!url) {
+    throw new Error("TURSO_DATABASE_URL environment variable is not set.");
+  }
+
+  const client = createClient({ url, authToken });
+
+  await client.migrate([
+    `CREATE TABLE IF NOT EXISTS episodes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      number TEXT NOT NULL,
+      title TEXT NOT NULL,
+      guest TEXT NOT NULL,
+      duration TEXT NOT NULL,
+      image TEXT NOT NULL,
+      link TEXT NOT NULL DEFAULT '',
+      sort_order INTEGER NOT NULL
+    )`,
+    `CREATE TABLE IF NOT EXISTS admin_users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL
+    )`,
+  ]);
+
+  await seedAdminUser(client);
+  await seedEpisodes(client);
+
+  return client;
+}
+
+async function seedAdminUser(client: Client): Promise<void> {
+  const result = await client.execute("SELECT COUNT(*) as count FROM admin_users");
+  const count = Number(result.rows[0]?.count ?? 0);
+  if (count > 0) return;
 
   const username = process.env.ADMIN_SEED_USERNAME;
   const password = process.env.ADMIN_SEED_PASSWORD;
@@ -65,17 +59,16 @@ function seedAdminUser() {
     return;
   }
 
-  db.prepare("INSERT INTO admin_users (username, password_hash) VALUES (?, ?)").run(
-    username,
-    hashPassword(password)
-  );
+  await client.execute({
+    sql: "INSERT INTO admin_users (username, password_hash) VALUES (?, ?)",
+    args: [username, hashPassword(password)],
+  });
 }
 
-function seedEpisodes() {
-  const row = db.prepare("SELECT COUNT(*) as count FROM episodes").get() as {
-    count: number;
-  };
-  if (row.count > 0) return;
+async function seedEpisodes(client: Client): Promise<void> {
+  const result = await client.execute("SELECT COUNT(*) as count FROM episodes");
+  const count = Number(result.rows[0]?.count ?? 0);
+  if (count > 0) return;
 
   // Oldest first — sort_order is ascending by release, so newest ends up
   // with the highest sort_order (see getEpisodes(), which orders DESC).
@@ -131,10 +124,11 @@ function seedEpisodes() {
     },
   ];
 
-  const insert = db.prepare(
-    "INSERT INTO episodes (number, title, guest, duration, image, link, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)"
+  await client.batch(
+    seed.map((ep, index) => ({
+      sql: "INSERT INTO episodes (number, title, guest, duration, image, link, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      args: [ep.number, ep.title, ep.guest, ep.duration, ep.image, "", index + 1],
+    })),
+    "write"
   );
-  seed.forEach((ep, index) => {
-    insert.run(ep.number, ep.title, ep.guest, ep.duration, ep.image, "", index + 1);
-  });
 }
