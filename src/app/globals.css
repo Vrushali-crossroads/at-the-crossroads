@@ -165,7 +165,7 @@ h3 {
 /* Soft shadow expansion for magnetic buttons — scale is handled by GSAP
    (useMagnetic) since it already owns the element's transform for the drag
    effect; this class only owns box-shadow so the two never fight the same
-   CSS property. */
+   CSS property. Test*/
 .magnetic-btn {
   transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
