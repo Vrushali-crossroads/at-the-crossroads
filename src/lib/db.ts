@@ -37,6 +37,12 @@ async function initDb(): Promise<Client> {
       username TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL
     )`,
+    // Claim table so concurrent cold starts (e.g. Next.js build workers
+    // prerendering pages in parallel) can't both pass a "seed if empty"
+    // check and race each other into a UNIQUE constraint failure.
+    `CREATE TABLE IF NOT EXISTS seed_state (
+      key TEXT PRIMARY KEY
+    )`,
   ]);
 
   await seedAdminUser(client);
@@ -45,30 +51,39 @@ async function initDb(): Promise<Client> {
   return client;
 }
 
-async function seedAdminUser(client: Client): Promise<void> {
-  const result = await client.execute("SELECT COUNT(*) as count FROM admin_users");
-  const count = Number(result.rows[0]?.count ?? 0);
-  if (count > 0) return;
+// Atomically claims a one-time seed action. Only the first caller (across
+// however many concurrent processes race to call this) gets `true` back —
+// everyone else gets `false` and should skip, since seed_state.key is a
+// primary key and SQLite/libSQL resolves the INSERT OR IGNORE conflict
+// atomically at the engine level.
+async function tryClaimSeed(client: Client, key: string): Promise<boolean> {
+  const result = await client.execute({
+    sql: "INSERT OR IGNORE INTO seed_state (key) VALUES (?)",
+    args: [key],
+  });
+  return result.rowsAffected > 0;
+}
 
+async function seedAdminUser(client: Client): Promise<void> {
   const username = process.env.ADMIN_SEED_USERNAME;
   const password = process.env.ADMIN_SEED_PASSWORD;
   if (!username || !password) {
     console.warn(
-      "[db] No admin_users exist and ADMIN_SEED_USERNAME/ADMIN_SEED_PASSWORD are not set — skipping admin seed."
+      "[db] ADMIN_SEED_USERNAME/ADMIN_SEED_PASSWORD are not set — skipping admin seed."
     );
     return;
   }
 
+  if (!(await tryClaimSeed(client, "admin_user"))) return;
+
   await client.execute({
-    sql: "INSERT INTO admin_users (username, password_hash) VALUES (?, ?)",
+    sql: "INSERT OR IGNORE INTO admin_users (username, password_hash) VALUES (?, ?)",
     args: [username, hashPassword(password)],
   });
 }
 
 async function seedEpisodes(client: Client): Promise<void> {
-  const result = await client.execute("SELECT COUNT(*) as count FROM episodes");
-  const count = Number(result.rows[0]?.count ?? 0);
-  if (count > 0) return;
+  if (!(await tryClaimSeed(client, "episodes"))) return;
 
   // Oldest first — sort_order is ascending by release, so newest ends up
   // with the highest sort_order (see getEpisodes(), which orders DESC).
