@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { useMagnetic } from "./useMagnetic";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
 import { scrollToSection } from "./Navbar";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 
 type SNLink =
   | { label: string; type: "anchor"; id: string }
@@ -32,7 +33,7 @@ function buildLinks(pathname: string): SNLink[] {
 
 export default function StickerNav() {
   const navRef = useRef<HTMLElement | null>(null);
-  const subscribeRef = useRef<HTMLButtonElement | null>(null);
+  const subscribeRef = useRef<HTMLAnchorElement | null>(null);
   const pathname = usePathname();
   const links = buildLinks(pathname);
 
@@ -117,12 +118,15 @@ export default function StickerNav() {
             </a>
           );
         })}
-        <button
+        <a
           ref={subscribeRef}
+          href={YOUTUBE_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="sn-reveal magnetic-btn rounded-[9px] bg-[#161310] px-[17px] py-[11px] font-archivo text-[13px] font-black text-[#FFC21F]"
         >
           SUBSCRIBE
-        </button>
+        </a>
       </div>
     </nav>
   );

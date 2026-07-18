@@ -9,6 +9,7 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { useGSAP } from "@gsap/react";
 import { useMagnetic } from "./useMagnetic";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, useGSAP);
 
@@ -37,7 +38,7 @@ export function scrollToSection(id: string, navHeight: number) {
 
 export default function Navbar() {
   const navRef = useRef<HTMLElement | null>(null);
-  const subscribeRef = useRef<HTMLButtonElement | null>(null);
+  const subscribeRef = useRef<HTMLAnchorElement | null>(null);
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -202,12 +203,15 @@ export default function Navbar() {
             </Link>
           );
         })}
-        <button
+        <a
           ref={subscribeRef}
+          href={YOUTUBE_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="nav-reveal nav-cta magnetic-btn rounded-full bg-ink px-[18px] py-[11px] font-sans text-[13.5px] font-bold text-cream transition-colors hover:bg-teal"
         >
           Subscribe
-        </button>
+        </a>
       </div>
 
       <button
@@ -262,9 +266,14 @@ export default function Navbar() {
             </Link>
           );
         })}
-        <button className="mobile-link mt-2 self-start rounded-full bg-ink px-5 py-2.5 font-sans text-[13.5px] font-bold text-cream">
+        <a
+          href={YOUTUBE_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mobile-link mt-2 self-start rounded-full bg-ink px-5 py-2.5 font-sans text-[13.5px] font-bold text-cream"
+        >
           Subscribe
-        </button>
+        </a>
       </div>
     </nav>
   );
