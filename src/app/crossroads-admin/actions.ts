@@ -28,17 +28,17 @@ export async function loginAction(
   }
 
   await createSession(admin.id);
-  redirect("/admin");
+  redirect("/crossroads-admin");
 }
 
 export async function logoutAction(): Promise<void> {
   await destroySession();
-  redirect("/admin/login");
+  redirect("/crossroads-admin/login");
 }
 
 async function requireSession() {
   const session = await getSession();
-  if (!session) redirect("/admin/login");
+  if (!session) redirect("/crossroads-admin/login");
   return session;
 }
 
@@ -72,8 +72,8 @@ function validateEpisodeInput(data: EpisodeInput): string | null {
 }
 
 function revalidateEpisodePages() {
-  revalidatePath("/admin");
-  revalidatePath("/admin/episodes");
+  revalidatePath("/crossroads-admin");
+  revalidatePath("/crossroads-admin/episodes");
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/episodes");

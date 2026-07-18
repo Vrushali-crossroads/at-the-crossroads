@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 // Add future modules here — each entry gets a sidebar link; the route itself
-// lives at src/app/admin/(dashboard)/<segment>/page.tsx.
+// lives at src/app/crossroads-admin/(dashboard)/<segment>/page.tsx.
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/admin" },
-  { label: "Episodes", href: "/admin/episodes" },
+  { label: "Dashboard", href: "/crossroads-admin" },
+  { label: "Episodes", href: "/crossroads-admin/episodes" },
 ];
 
 function isActive(pathname: string, href: string) {
-  return href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+  return href === "/crossroads-admin" ? pathname === "/crossroads-admin" : pathname.startsWith(href);
 }
 
 function NavLinks({ className, linkClassName }: { className: string; linkClassName: (active: boolean) => string }) {

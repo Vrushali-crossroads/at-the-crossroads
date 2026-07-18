@@ -7,7 +7,7 @@ export default async function AdminDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
-  if (!session) redirect("/admin/login");
+  if (!session) redirect("/crossroads-admin/login");
 
   return (
     <div className="flex min-h-screen flex-col bg-cream sm:flex-row">

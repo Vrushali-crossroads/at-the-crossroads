@@ -8,7 +8,7 @@ export default async function RecentEpisodesWidget() {
     <div className="rounded-2xl border border-ink/10 bg-white p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-serif text-xl text-ink">Recent episodes</h2>
-        <Link href="/admin/episodes" className="font-sans text-sm font-bold text-teal hover:underline">
+        <Link href="/crossroads-admin/episodes" className="font-sans text-sm font-bold text-teal hover:underline">
           View all &rarr;
         </Link>
       </div>

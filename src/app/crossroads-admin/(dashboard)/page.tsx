@@ -31,7 +31,7 @@ export default function AdminDashboardPage() {
           <h2 className="mb-4 font-serif text-xl text-ink">Quick actions</h2>
           <div className="flex flex-col gap-2">
             <Link
-              href="/admin/episodes"
+              href="/crossroads-admin/episodes"
               className="rounded-lg bg-teal px-4 py-2.5 text-center font-sans text-sm font-bold text-cream transition-opacity hover:opacity-90"
             >
               + Add episode
