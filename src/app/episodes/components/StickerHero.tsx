@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
 import { floatIdle } from "./scrollFx";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -14,7 +15,7 @@ export const HERO_PIN_DISTANCE = "+=90%";
 
 export default function StickerHero() {
   const rootRef = useRef<HTMLElement | null>(null);
-  const cta1Ref = useRef<HTMLSpanElement | null>(null);
+  const cta1Ref = useRef<HTMLAnchorElement | null>(null);
   const cta2Ref = useRef<HTMLAnchorElement | null>(null);
 
   useGSAP(
@@ -123,12 +124,15 @@ export default function StickerHero() {
           wish they&apos;d learned sooner.
         </p>
         <div className="sh-reveal flex flex-wrap gap-3">
-          <span
+          <a
             ref={cta1Ref}
+            href={YOUTUBE_CHANNEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="sh-cta-1 rounded-xl bg-[#161310] px-6 py-4 font-archivo text-sm font-black text-white shadow-[4px_4px_0_rgba(22,19,16,0.25)] will-change-transform"
           >
             ▶ SUBSCRIBE ON YOUTUBE
-          </span>
+          </a>
           <a
             ref={cta2Ref}
             href="#collab"

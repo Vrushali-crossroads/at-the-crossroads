@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useMagnetic } from "./useMagnetic";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -331,7 +332,13 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <a ref={cta1Ref} href="#" className="hero-fade hero-cta magnetic-btn group relative overflow-hidden rounded-full bg-mango px-8 py-4 font-bold text-ink shadow-lg">
+            <a
+              ref={cta1Ref}
+              href={YOUTUBE_CHANNEL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-fade hero-cta magnetic-btn group relative overflow-hidden rounded-full bg-mango px-8 py-4 font-bold text-ink shadow-lg"
+            >
                 <span className="relative z-10 flex items-center gap-2">
                     <svg viewBox="0 0 16 16" className="h-4 w-4 fill-current"><path d="M4 2.5v11l10-5.5-10-5.5z" /></svg>
                     Subscribe on YouTube

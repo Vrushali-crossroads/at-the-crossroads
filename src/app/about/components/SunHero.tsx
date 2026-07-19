@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useMagnetic } from "../../components/useMagnetic";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -131,7 +132,9 @@ export default function SunHero() {
         <div className="sh-reveal mb-13 flex flex-wrap justify-center gap-3">
           <a
             ref={cta1Ref}
-            href="#"
+            href={YOUTUBE_CHANNEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="magnetic-btn inline-flex items-center gap-2 rounded-full bg-ink px-6.5 py-3.5 font-sans text-sm font-bold text-white"
           >
             <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-current" aria-hidden>
