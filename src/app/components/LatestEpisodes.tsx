@@ -11,13 +11,6 @@ import type { Episode } from "@/lib/episodes";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const STRIP_IMAGES = [
-  "/images/episodes/strip-1.jpg",
-  "/images/episodes/strip-2.jpg",
-  "/images/episodes/strip-3.jpg",
-  "/images/episodes/strip-4.jpg",
-];
-
 function PlayIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 16 16" className={className} fill="currentColor" aria-hidden>
@@ -208,19 +201,22 @@ export default function LatestEpisodes({ episodes }: Readonly<{ episodes: Episod
       </div>
 
       <div className="ep-strip mt-3.5 grid grid-cols-2 gap-3.5 sm:grid-cols-4">
-        {STRIP_IMAGES.map((src) => (
-          <div
-            key={src}
-            className="ep-strip-item relative aspect-video scale-95 overflow-hidden rounded-xl opacity-0"
+        {episodes.slice(3, 7).map((ep) => (
+          <a
+            key={ep.id}
+            href={ep.link || undefined}
+            target={ep.link ? "_blank" : undefined}
+            rel={ep.link ? "noopener noreferrer" : undefined}
+            className="ep-strip-item group relative block aspect-video scale-95 overflow-hidden rounded-xl opacity-0"
           >
             <Image
-              src={src}
-              alt=""
+              src={ep.image}
+              alt={ep.title}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
               sizes="(min-width: 640px) 25vw, 50vw"
             />
-          </div>
+          </a>
         ))}
       </div>
     </section>
