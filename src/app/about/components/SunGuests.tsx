@@ -158,10 +158,10 @@ export default function SunGuests() {
           </a>
           <a
             ref={emailRef}
-            href="mailto:hello@atcrossroads.in"
+            href="mailto:vrushali@atcrossroads.in"
             className="magnetic-btn rounded-full border-[1.5px] border-ink/22 px-6 py-3.5 font-sans text-sm font-bold text-ink"
           >
-            hello@atcrossroads.in
+            vrushali@atcrossroads.in
           </a>
         </div>
 

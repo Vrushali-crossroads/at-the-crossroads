@@ -38,9 +38,9 @@ const THOUGHTS: Thought[] = [
 ];
 
 const VARIANT_CLASSES: Record<Thought["variant"], string> = {
-  yellow: "bg-[#FFC21F] text-[#161310]",
-  white: "bg-white text-[#161310]",
-  coral: "bg-[#FF7E5F] text-white",
+  yellow: "bg-mango text-ink",
+  white: "bg-white text-ink",
+  coral: "bg-teal text-white",
 };
 
 // Alternating entrance side/rotation per card index.
@@ -63,7 +63,7 @@ function applyFocusEmphasis(elements: Element[]) {
         gsap.set(el, {
           scale: 0.92 + centered * 0.13,
           opacity: 0.6 + centered * 0.4,
-          boxShadow: `${shadow}px ${shadow}px 0 #161310`,
+          boxShadow: `${shadow}px ${shadow}px 0 #1A1714`,
         });
       },
     })
@@ -82,7 +82,7 @@ export default function ThoughtsSection() {
           y: 0,
           scale: 1,
           rotate: 0,
-          boxShadow: "6px 6px 0 #161310",
+          boxShadow: "6px 6px 0 #1A1714",
         });
         return;
       }
@@ -102,11 +102,13 @@ export default function ThoughtsSection() {
         filter: "blur(0px)",
         duration: 1,
         stagger: 0.2,
-      }).to(
-        ".th-card",
-        { x: 0, y: 0, rotate: 0, opacity: 1, duration: 1, stagger: 0.25, ease: "back.out(1.7)" },
-        0.15
-      );
+      })
+        .set(".th-header .reveal-fade", { filter: "none" })
+        .to(
+          ".th-card",
+          { x: 0, y: 0, rotate: 0, opacity: 1, duration: 1, stagger: 0.25, ease: "back.out(1.7)" },
+          0.15
+        );
 
       applyFocusEmphasis(gsap.utils.toArray(".th-card"));
     },
@@ -116,13 +118,13 @@ export default function ThoughtsSection() {
   return (
     <section ref={rootRef} id="thoughts" className="px-6 pb-2 pt-16 sm:px-11">
       <div className="th-header mb-7 max-w-xl">
-        <div className="reveal-fade mb-3 inline-block -rotate-1 rounded-[7px] bg-[#FF7E5F] px-2.5 py-1.5 font-archivo text-xs font-black text-white">
+        <div className="reveal-fade mb-3 inline-block -rotate-1 rounded-[7px] bg-teal px-2.5 py-1.5 font-archivo text-xs font-black text-white">
           FROM THE CROSSROADS
         </div>
         <h2 className="reveal-fade mb-2 font-archivo text-[clamp(1.6rem,1.1rem+2vw,2.375rem)] font-black leading-none uppercase">
           Thoughts in between
         </h2>
-        <p className="reveal-fade font-sans text-base font-semibold text-[#161310]/65">
+        <p className="reveal-fade font-sans text-base font-semibold text-ink/65">
           Quick takes &amp; short videos on the ideas I can&apos;t stop thinking about.
         </p>
       </div>
@@ -131,7 +133,7 @@ export default function ThoughtsSection() {
         {THOUGHTS.map((t, i) => (
           <div
             key={t.meta}
-            className={`th-card flex min-h-52.5 flex-col justify-between rounded-[14px] border-2 border-[#161310] p-6 opacity-0 shadow-[6px_6px_0_#161310] will-change-transform ${VARIANT_CLASSES[t.variant]}`}
+            className={`th-card flex min-h-52.5 flex-col justify-between rounded-[14px] border-2 border-ink p-6 opacity-0 shadow-[6px_6px_0_#1A1714] will-change-transform ${VARIANT_CLASSES[t.variant]}`}
             style={{ transform: START_TRANSFORM[i] }}
           >
             <p className="font-sans text-xl font-extrabold leading-[1.28]">&ldquo;{t.quote}&rdquo;</p>
@@ -140,7 +142,7 @@ export default function ThoughtsSection() {
               {t.duration ? (
                 <span
                   className={`rounded-full px-3 py-1.5 font-sans text-xs font-extrabold ${
-                    t.variant === "coral" ? "bg-white text-[#161310]" : "bg-[#161310] text-[#FFC21F]"
+                    t.variant === "coral" ? "bg-white text-ink" : "bg-ink text-mango"
                   }`}
                 >
                   ▶ {t.duration}
@@ -152,7 +154,7 @@ export default function ThoughtsSection() {
       </div>
 
       <div className="mt-5">
-        <a href="#" className="font-archivo text-sm font-black text-[#FF7E5F]">
+        <a href="#" className="font-archivo text-sm font-black text-teal">
           SEE ALL THOUGHTS →
         </a>
       </div>

@@ -25,7 +25,7 @@ export default async function EpisodesPage() {
   const episodes = await getEpisodes();
 
   return (
-    <div className={`${archivo.variable} bg-[#FFF7DA] text-[#161310]`}>
+    <div className={`${archivo.variable} bg-cream text-ink`}>
       <StickerNav />
       <StickerHero />
       <MarqueeTape />

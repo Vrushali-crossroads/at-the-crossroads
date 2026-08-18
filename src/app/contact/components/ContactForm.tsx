@@ -29,6 +29,23 @@ export default function ContactForm() {
 
   useMagnetic(submitRef, 0.2);
 
+  // Landing here with a #form hash (e.g. the hero's "Collaborate" CTA on
+  // /episodes) — smooth-scroll to the form once the page has settled,
+  // offsetting for the fixed nav the same way the home page's hash links do.
+  useEffect(() => {
+    if (typeof window === "undefined" || window.location.hash !== "#form") return;
+    const el = rootRef.current;
+    if (!el) return;
+    const raf = requestAnimationFrame(() => {
+      setTimeout(() => {
+        const navHeight = document.querySelector("nav")?.getBoundingClientRect().height ?? 0;
+        const y = el.getBoundingClientRect().top + window.scrollY - navHeight - 20;
+        window.scrollTo({ top: y, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+      }, 60);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   // Auto-return to a blank form a few seconds after the confirmation shows.
   useEffect(() => {
     if (!state?.success) return;
@@ -197,19 +214,19 @@ export default function ContactForm() {
     };
 
   const inputClass =
-    "rounded-xl border-2 border-[#161310]/15 bg-[#FFF7DA] px-4 py-3 font-sans text-[15px] text-[#161310] placeholder:text-[#161310]/40 focus:border-[#161310] focus:outline-none";
+    "rounded-xl border-2 border-ink/15 bg-cream px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/40 focus:border-ink focus:outline-none";
 
   return (
-    <section ref={rootRef} className="bg-white px-6 py-16 sm:px-11">
+    <section ref={rootRef} id="form" className="bg-white px-6 py-16 sm:px-11">
       <div
         ref={cardRef}
-        className="mx-auto max-w-2xl rounded-[18px] border-2 border-[#161310] bg-white p-8 shadow-[8px_8px_0_#161310] sm:p-11"
+        className="mx-auto max-w-2xl rounded-[18px] border-2 border-ink bg-white p-8 shadow-[8px_8px_0_#1A1714] sm:p-11"
       >
         {showConfirmation ? (
           <div ref={successBlockRef} className="relative py-10 text-center">
             <svg
               aria-hidden
-              className="cf-success-spark absolute left-[16%] top-1 w-5 text-[#2B4E55]"
+              className="cf-success-spark absolute left-[16%] top-1 w-5 text-teal"
               viewBox="0 0 24 24"
               fill="none"
             >
@@ -217,7 +234,7 @@ export default function ContactForm() {
             </svg>
             <svg
               aria-hidden
-              className="cf-success-spark absolute right-[14%] top-5 w-4 text-[#FFC21F]"
+              className="cf-success-spark absolute right-[14%] top-5 w-4 text-mango"
               viewBox="0 0 24 24"
               fill="none"
             >
@@ -225,7 +242,7 @@ export default function ContactForm() {
             </svg>
             <svg
               aria-hidden
-              className="cf-success-spark absolute left-[24%] bottom-2 w-3 text-[#161310]/40"
+              className="cf-success-spark absolute left-[24%] bottom-2 w-3 text-ink/40"
               viewBox="0 0 24 24"
               fill="none"
             >
@@ -233,23 +250,23 @@ export default function ContactForm() {
             </svg>
 
             <div className="cf-success-check relative mx-auto mb-4 flex h-16 w-16 items-center justify-center">
-              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-[#FFC21F]" aria-hidden />
-              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-[#FFC21F]" aria-hidden />
-              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-[#FFC21F]" aria-hidden />
-              <span className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#161310] bg-[#FFC21F]">
-                <svg viewBox="0 0 16 16" className="ml-0.5 h-6 w-6 fill-[#161310]" aria-hidden>
+              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-mango" aria-hidden />
+              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-mango" aria-hidden />
+              <span className="cf-ring pointer-events-none absolute inset-0 rounded-full border-2 border-mango" aria-hidden />
+              <span className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-mango">
+                <svg viewBox="0 0 16 16" className="ml-0.5 h-6 w-6 fill-ink" aria-hidden>
                   <path d="M4 2.5v11l10-5.5-10-5.5z" />
                 </svg>
               </span>
             </div>
 
-            <div className="cf-success-badge mb-3 inline-block -rotate-1 rounded-[7px] bg-[#FFC21F] px-2.5 py-1.5 font-archivo text-xs font-black text-[#161310]">
+            <div className="cf-success-badge mb-3 inline-block -rotate-1 rounded-[7px] bg-mango px-2.5 py-1.5 font-archivo text-xs font-black text-ink">
               ON AIR
             </div>
-            <h3 className="cf-success-heading mb-3 font-archivo text-2xl font-black text-[#161310]">
+            <h3 className="cf-success-heading mb-3 font-archivo text-2xl font-black text-ink">
               Thanks, {form.name.split(" ")[0]} — got it.
             </h3>
-            <p className="cf-success-copy mx-auto max-w-sm font-sans text-[#161310]/66">
+            <p className="cf-success-copy mx-auto max-w-sm font-sans text-ink/66">
               Your message just went out live to the studio. I read every note myself and reply within a few days.
             </p>
           </div>
@@ -257,7 +274,7 @@ export default function ContactForm() {
           <form action={formAction} className="flex flex-col gap-5">
             <div className="cf-field grid grid-cols-1 gap-5 sm:grid-cols-2">
               <label className="flex flex-col gap-2">
-                <span className="font-sans text-[13px] font-bold text-[#161310]/60">Name</span>
+                <span className="font-sans text-[13px] font-bold text-ink/60">Name</span>
                 <input
                   type="text"
                   name="name"
@@ -269,7 +286,7 @@ export default function ContactForm() {
                 />
               </label>
               <label className="flex flex-col gap-2">
-                <span className="font-sans text-[13px] font-bold text-[#161310]/60">Email</span>
+                <span className="font-sans text-[13px] font-bold text-ink/60">Email</span>
                 <input
                   type="email"
                   name="email"
@@ -283,7 +300,7 @@ export default function ContactForm() {
             </div>
 
             <label className="cf-field flex flex-col gap-2">
-              <span className="font-sans text-[13px] font-bold text-[#161310]/60">This is about</span>
+              <span className="font-sans text-[13px] font-bold text-ink/60">This is about</span>
               <select name="reason" value={form.reason} onChange={handleChange("reason")} className={inputClass}>
                 {REASONS.map((r) => (
                   <option key={r} value={r}>
@@ -294,7 +311,7 @@ export default function ContactForm() {
             </label>
 
             <label className="cf-field flex flex-col gap-2">
-              <span className="font-sans text-[13px] font-bold text-[#161310]/60">Message</span>
+              <span className="font-sans text-[13px] font-bold text-ink/60">Message</span>
               <textarea
                 name="message"
                 required
@@ -316,17 +333,17 @@ export default function ContactForm() {
               ref={submitRef}
               type="submit"
               disabled={pending}
-              className="cf-field magnetic-btn mt-1 flex cursor-pointer items-center gap-2 self-start rounded-full border-2 border-[#161310] bg-[#FFC21F] px-8 py-4 font-archivo text-sm font-black text-[#161310] shadow-[4px_4px_0_#161310] disabled:cursor-not-allowed disabled:opacity-70"
+              className="cf-field magnetic-btn mt-1 flex cursor-pointer items-center gap-2 self-start rounded-full border-2 border-ink bg-mango px-8 py-4 font-archivo text-sm font-black text-ink shadow-[4px_4px_0_#1A1714] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {pending && <span className="cf-rec-dot h-2 w-2 shrink-0 rounded-full bg-[#161310]" aria-hidden />}
+              {pending && <span className="cf-rec-dot h-2 w-2 shrink-0 rounded-full bg-ink" aria-hidden />}
               {pending ? "BROADCASTING" : "SEND MESSAGE"}
               {pending && (
                 <span className="flex h-4 items-end gap-0.75" aria-hidden>
-                  <span className="cf-wave-bar h-1.5 w-0.75 origin-bottom rounded-full bg-[#161310]" />
-                  <span className="cf-wave-bar h-2.5 w-0.75 origin-bottom rounded-full bg-[#161310]" />
-                  <span className="cf-wave-bar h-1 w-0.75 origin-bottom rounded-full bg-[#161310]" />
-                  <span className="cf-wave-bar h-3 w-0.75 origin-bottom rounded-full bg-[#161310]" />
-                  <span className="cf-wave-bar h-1.5 w-0.75 origin-bottom rounded-full bg-[#161310]" />
+                  <span className="cf-wave-bar h-1.5 w-0.75 origin-bottom rounded-full bg-ink" />
+                  <span className="cf-wave-bar h-2.5 w-0.75 origin-bottom rounded-full bg-ink" />
+                  <span className="cf-wave-bar h-1 w-0.75 origin-bottom rounded-full bg-ink" />
+                  <span className="cf-wave-bar h-3 w-0.75 origin-bottom rounded-full bg-ink" />
+                  <span className="cf-wave-bar h-1.5 w-0.75 origin-bottom rounded-full bg-ink" />
                 </span>
               )}
             </button>

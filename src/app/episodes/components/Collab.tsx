@@ -10,10 +10,10 @@ import { useMagnetic } from "../../components/useMagnetic";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const STATS = [
-  { value: 55, label: "episodes", color: "text-[#FFC21F]" },
-  { value: 9, label: "long-form pods", color: "text-[#FF7E5F]" },
+  { value: 55, label: "episodes", color: "text-mango" },
+  { value: 9, label: "long-form pods", color: "text-teal" },
   { value: "Weekly", label: "new episodes", color: "text-white" },
-  { value: "India", label: "growing reach", color: "text-[#FFC21F]" },
+  { value: "India", label: "growing reach", color: "text-mango" },
 ];
 
 export default function Collab() {
@@ -30,14 +30,16 @@ export default function Collab() {
       const reduced = prefersReducedMotion();
 
       if (reduced) {
-        gsap.set([".cl-reveal", ".cl-stat-label"], { clearProps: "all", opacity: 1, y: 0 });
+        gsap.set([".cl-reveal", ".cl-cta", ".cl-stat-label"], { clearProps: "all", opacity: 1, y: 0 });
         gsap.utils.toArray<HTMLElement>(".cl-stat-num[data-count]").forEach((el) => {
           el.textContent = el.dataset.count ?? "";
         });
         return;
       }
 
-      gsap.set(".cl-reveal", { y: 24, opacity: 0, filter: "blur(6px)" });
+      gsap.set(".cl-reveal", { y: 24, opacity: 0 });
+      gsap.set(".cl-copy", { y: 24, opacity: 0 });
+      gsap.set(".cl-cta", { y: 24, opacity: 0 });
       gsap.set(".cl-stat-label", { y: 16, opacity: 0 });
       gsap.set(".cl-stat-num[data-count]", { opacity: 0 });
       gsap.set(".cl-stat-text", { opacity: 0, scale: 0.85 });
@@ -77,7 +79,9 @@ export default function Collab() {
 
       function buildTimeline() {
         const tl = gsap.timeline({ defaults: { ease: "none" } });
-        tl.to(".cl-reveal", { y: 0, opacity: 1, filter: "blur(0px)", duration: 1, stagger: 0.15 }, 0);
+        tl.to(".cl-reveal", { y: 0, opacity: 1, duration: 1, stagger: 0.15 }, 0)
+          .to(".cl-copy", { y: 0, opacity: 1, duration: 1 }, 0.05)
+          .to(".cl-cta", { y: 0, opacity: 1, duration: 1 }, 0.1);
 
         STATS.forEach((stat, i) => {
           const pos = 0.25 + i * 0.15;
@@ -113,35 +117,35 @@ export default function Collab() {
     <section id="collab" ref={sectionRef} className="relative px-6 pt-18 sm:px-11">
       <div
         ref={panelRef}
-        className="relative overflow-hidden rounded-[18px] bg-[#161310] p-8 text-[#FFF7DA] sm:p-13"
+        className="relative overflow-hidden rounded-[18px] bg-ink p-8 text-cream sm:p-13"
       >
         <span
           aria-hidden
-          className="cl-shape pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-[30%] border-2 border-[#FFC21F]/20 will-change-transform"
+          className="cl-shape pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-[30%] border-2 border-mango/20 will-change-transform"
         />
         <div className="relative grid grid-cols-1 gap-9 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <div className="cl-reveal mb-4 inline-block rounded-[7px] bg-[#FFC21F] px-2.5 py-1.5 font-archivo text-xs font-black text-[#161310]">
+            <div className="cl-reveal mb-4 inline-block rounded-[7px] bg-mango px-2.5 py-1.5 font-archivo text-xs font-black text-ink">
               WORK WITH ME
             </div>
             <h2 className="cl-reveal mb-4 font-archivo text-[clamp(1.5rem,1.1rem+1.8vw,2rem)] font-black leading-[1.06] uppercase">
               Speaking · Training · Brand collabs
             </h2>
-            <p className="cl-reveal mb-6.5 max-w-107.5 font-sans text-base font-medium text-[#FFF7DA]/72">
+            <p className="cl-copy mb-6.5 max-w-107.5 font-sans text-base font-medium text-cream/72">
               Bring the crossroads conversation to your stage, team or campaign.
             </p>
-            <div className="cl-reveal flex flex-wrap gap-3">
+            <div className="cl-cta flex flex-wrap gap-3">
               <a
                 ref={mediaKitRef}
                 href="#contact"
-                className="magnetic-btn rounded-[11px] bg-[#FFC21F] px-5.5 py-3.5 font-archivo text-[13px] font-black text-[#161310] shadow-[4px_4px_0_#FF7E5F]"
+                className="magnetic-btn rounded-[11px] bg-mango px-5.5 py-3.5 font-archivo text-[13px] font-black text-ink shadow-[4px_4px_0_#1A1714]"
               >
                 DOWNLOAD MEDIA KIT
               </a>
               <a
                 ref={enquireRef}
                 href="#contact"
-                className="magnetic-btn rounded-[11px] border-2 border-[#FFF7DA]/45 px-5.5 py-3.5 font-archivo text-[13px] font-black text-[#FFF7DA]"
+                className="magnetic-btn rounded-[11px] border-2 border-cream/45 px-5.5 py-3.5 font-archivo text-[13px] font-black text-cream"
               >
                 ENQUIRE →
               </a>
@@ -168,7 +172,7 @@ export default function Collab() {
                 )}
                 <div
                   data-index={i}
-                  className="cl-stat-label mt-1.5 font-sans text-[13px] leading-[1.3] font-semibold text-[#FFF7DA]/60"
+                  className="cl-stat-label mt-1.5 font-sans text-[13px] leading-[1.3] font-semibold text-cream/60"
                 >
                   {s.label}
                 </div>

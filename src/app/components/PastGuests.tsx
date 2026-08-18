@@ -255,10 +255,10 @@ export default function PastGuests() {
           For guest pitches, partnerships &amp; speaking enquiries
         </h2>
         <a
-          href="mailto:hello@atcrossroads.in"
+          href="mailto:vrushali@atcrossroads.in"
           className="ct-reveal reveal-fade relative inline-block text-(length:--text-contact-link) text-teal"
         >
-          hello@atcrossroads.in
+          vrushali@atcrossroads.in
           <svg
             className="pointer-events-none absolute -bottom-1 left-0 w-full"
             viewBox="0 0 200 8"

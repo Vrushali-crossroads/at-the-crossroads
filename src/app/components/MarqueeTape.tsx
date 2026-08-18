@@ -15,7 +15,7 @@ function TapeGroup({ groupKey }: { groupKey: string }) {
     <div className="flex shrink-0 items-center">
       {TAGS.map((tag) => (
         <span key={`${groupKey}-${tag}`} className="flex items-center">
-          <span className="px-5.5 font-archivo text-sm font-black tracking-wide text-[#FFC21F] uppercase">
+          <span className="px-5.5 font-archivo text-sm font-black tracking-wide text-mango uppercase">
             {tag}
           </span>
           <span className="px-5.5 text-white">●</span>
@@ -68,7 +68,7 @@ export default function MarqueeTape() {
   );
 
   return (
-    <div ref={wrapRef} className="overflow-hidden bg-[#161310] py-3">
+    <div ref={wrapRef} className="overflow-hidden bg-ink py-3">
       <div ref={trackRef} className="flex w-max will-change-transform">
         <TapeGroup groupKey="a" />
         <TapeGroup groupKey="b" />

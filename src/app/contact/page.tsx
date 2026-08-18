@@ -18,7 +18,7 @@ const archivo = Archivo({
 
 export default function ContactPage() {
   return (
-    <div className={`${archivo.variable} bg-[#FFF7DA] text-[#161310]`}>
+    <div className={`${archivo.variable} bg-cream text-ink`}>
       <StickerNav />
       <ContactHero />
       <MarqueeTape />

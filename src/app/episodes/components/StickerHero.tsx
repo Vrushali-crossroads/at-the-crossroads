@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -49,6 +50,9 @@ export default function StickerHero() {
           stagger: 0.12,
           ease: "power3.out",
         })
+        // "blur(0px)" can leave the element on a soft-rendered compositing
+        // layer in some browsers — force it fully off once revealed.
+        .set(".sh-reveal", { filter: "none" })
         .to(".sh-photo", { scale: 1, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.5");
 
       // Idle "breathing" float on the CTAs so they never sit dead-still.
@@ -99,27 +103,27 @@ export default function StickerHero() {
     <section
       ref={rootRef}
       id="sticker-hero"
-      className="relative grid grid-cols-1 items-center gap-8 overflow-hidden bg-[#FFC21F] px-6 pb-14 pt-(--sticker-nav-h) sm:px-11 sm:pb-16 lg:grid-cols-[1.05fr_0.95fr]"
+      className="relative grid grid-cols-1 items-center gap-8 overflow-hidden bg-cream px-6 pb-14 pt-(--sticker-nav-h) sm:px-11 sm:pb-16 lg:grid-cols-[1.05fr_0.95fr]"
     >
       <div
         aria-hidden
-        className="sh-dots pointer-events-none absolute right-6 top-6 hidden h-[120px] w-[120px] opacity-50 [background-image:radial-gradient(#161310_2px,transparent_2.2px)] [background-size:15px_15px] will-change-transform sm:block"
+        className="sh-dots pointer-events-none absolute right-6 top-6 hidden h-[120px] w-[120px] opacity-50 [background-image:radial-gradient(#1A1714_2px,transparent_2.2px)] [background-size:15px_15px] will-change-transform sm:block"
       />
 
       <div>
-        <div className="sh-reveal mb-5 inline-block -rotate-2 rounded-[7px] bg-[#161310] px-3.5 py-2 font-archivo text-xs font-black tracking-[0.05em] text-[#FFC21F] will-change-transform">
+        <div className="sh-reveal mb-5 inline-block -rotate-2 rounded-[7px] bg-ink px-3.5 py-2 font-archivo text-xs font-black tracking-[0.05em] text-mango will-change-transform">
           🎙 PODCAST · NEW EVERY WEEK
         </div>
         <h1 className="mb-5 font-archivo text-[clamp(2.25rem,1.3rem+4.5vw,3.75rem)] font-black leading-[0.96] tracking-[-0.02em] uppercase will-change-transform">
           <span className="sh-reveal sh-line1 block">Real talk at</span>
           <span className="sh-reveal sh-line2 block">
             life&apos;s{" "}
-            <span className="sh-highlight inline-block -rotate-1 bg-[#161310] px-3 py-0.5 text-[#FFC21F] shadow-[5px_5px_0_rgba(22,19,16,0.18)] will-change-transform">
+            <span className="sh-highlight inline-block -rotate-1 bg-ink px-3 py-0.5 text-mango shadow-[5px_5px_0_rgba(26,23,20,0.18)] will-change-transform">
               crossroads
             </span>
           </span>
         </h1>
-        <p className="sh-reveal mb-7 max-w-[455px] font-sans text-lg font-semibold text-[#161310]/82">
+        <p className="sh-reveal mb-7 max-w-[455px] font-sans text-lg font-semibold text-ink/82">
           No fluff — honest conversations with leaders and changemakers, and the lessons they
           wish they&apos;d learned sooner.
         </p>
@@ -129,34 +133,34 @@ export default function StickerHero() {
             href={YOUTUBE_CHANNEL_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="sh-cta-1 rounded-xl bg-[#161310] px-6 py-4 font-archivo text-sm font-black text-white shadow-[4px_4px_0_rgba(22,19,16,0.25)] will-change-transform"
+            className="sh-cta-1 rounded-xl bg-ink px-6 py-4 font-archivo text-sm font-black text-white shadow-[4px_4px_0_rgba(26,23,20,0.25)] will-change-transform"
           >
             ▶ SUBSCRIBE ON YOUTUBE
           </a>
-          <a
+          <Link
             ref={cta2Ref}
-            href="#collab"
-            className="sh-cta-2 rounded-xl border-2 border-[#161310] bg-white px-6 py-4 font-archivo text-sm font-black text-[#161310] shadow-[4px_4px_0_#161310] transition-transform duration-200 hover:-translate-y-0.5 will-change-transform"
+            href="/contact#form"
+            className="sh-cta-2 rounded-xl border-2 border-ink bg-white px-6 py-4 font-archivo text-sm font-black text-ink shadow-[4px_4px_0_#1A1714] transition-transform duration-200 hover:-translate-y-0.5 will-change-transform"
           >
             COLLABORATE →
-          </a>
+          </Link>
         </div>
       </div>
 
       <div className="sh-photo relative flex justify-center">
         <span
           aria-hidden
-          className="sh-orbit-1 absolute -left-3 top-6 text-2xl text-[#161310]/70 will-change-transform"
+          className="sh-orbit-1 absolute -left-3 top-6 text-2xl text-ink/70 will-change-transform"
         >
           ✦
         </span>
         <span
           aria-hidden
-          className="sh-orbit-2 absolute -right-2 bottom-10 text-2xl text-[#161310]/70 will-change-transform"
+          className="sh-orbit-2 absolute -right-2 bottom-10 text-2xl text-ink/70 will-change-transform"
         >
           〜
         </span>
-        <div className="relative aspect-[380/460] w-[380px] max-w-full overflow-hidden rounded-2xl border-[3px] border-[#161310] bg-white shadow-[9px_9px_0_#161310]">
+        <div className="relative aspect-[380/460] w-[380px] max-w-full overflow-hidden rounded-2xl border-[3px] border-ink bg-white shadow-[9px_9px_0_#1A1714]">
           <Image
             src="/images/vrushali-hero.jpeg"
             alt="Vrushali"
@@ -165,10 +169,10 @@ export default function StickerHero() {
             sizes="380px"
           />
         </div>
-        <div className="sh-badge-ep absolute right-[-12px] top-[18px] rotate-6 rounded-xl border-2 border-[#161310] bg-white px-3.5 py-2.5 font-archivo text-[13px] font-black shadow-[3px_3px_0_#161310] will-change-transform">
+        <div className="sh-badge-ep absolute right-[-12px] top-[18px] rotate-6 rounded-xl border-2 border-ink bg-white px-3.5 py-2.5 font-archivo text-[13px] font-black shadow-[3px_3px_0_#1A1714] will-change-transform">
           EP 09 OUT NOW!
         </div>
-        <div className="sh-badge-count absolute bottom-[26px] left-[-14px] -rotate-[4deg] rounded-full bg-[#161310] px-3.5 py-2.5 font-sans text-[13px] font-extrabold text-[#FFC21F] will-change-transform">
+        <div className="sh-badge-count absolute bottom-[26px] left-[-14px] -rotate-[4deg] rounded-full bg-ink px-3.5 py-2.5 font-sans text-[13px] font-extrabold text-mango will-change-transform">
           🔥 55 episodes
         </div>
       </div>

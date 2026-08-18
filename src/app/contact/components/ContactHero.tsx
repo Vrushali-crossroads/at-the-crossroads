@@ -61,42 +61,42 @@ export default function ContactHero() {
   return (
     <section
       ref={rootRef}
-      className="relative overflow-hidden bg-[#FFC21F] px-6 pb-16 pt-(--sticker-nav-h) text-center sm:px-11"
+      className="relative overflow-hidden bg-cream px-6 pb-16 pt-(--sticker-nav-h) text-center sm:px-11"
     >
       <div
         ref={dotsRef}
         aria-hidden
-        className="pointer-events-none absolute right-[8%] top-20 hidden h-24 w-24 opacity-50 [background-image:radial-gradient(#161310_2px,transparent_2.2px)] [background-size:15px_15px] will-change-transform sm:block"
+        className="pointer-events-none absolute right-[8%] top-20 hidden h-24 w-24 opacity-50 [background-image:radial-gradient(#1A1714_2px,transparent_2.2px)] [background-size:15px_15px] will-change-transform sm:block"
       />
-      <span aria-hidden className="ch-doodle ch-doodle-1 absolute left-[10%] top-28 text-3xl text-[#161310]/70">
+      <span aria-hidden className="ch-doodle ch-doodle-1 absolute left-[10%] top-28 text-3xl text-ink/70">
         ✦
       </span>
-      <span aria-hidden className="ch-doodle ch-doodle-2 absolute bottom-24 right-[12%] text-3xl text-[#161310]/70">
+      <span aria-hidden className="ch-doodle ch-doodle-2 absolute bottom-24 right-[12%] text-3xl text-ink/70">
         〜
       </span>
 
       <div className="mx-auto max-w-3xl pt-10 sm:pt-14">
-        <div className="ch-reveal mb-6 inline-block -rotate-2 rounded-[7px] bg-[#161310] px-3.5 py-2 font-archivo text-xs font-black tracking-[0.05em] text-[#FFC21F]">
+        <div className="ch-reveal mb-6 inline-block -rotate-2 rounded-[7px] bg-ink px-3.5 py-2 font-archivo text-xs font-black tracking-[0.05em] text-mango">
           🎙 GET IN TOUCH
         </div>
         <h1 className="ch-reveal mb-6 font-archivo text-[clamp(2rem,1.2rem+4vw,3.5rem)] font-black leading-[0.98] uppercase">
           Let&apos;s build something worth{" "}
-          <span className="inline-block -rotate-1 bg-[#161310] px-3 py-0.5 text-[#FFC21F] shadow-[5px_5px_0_rgba(22,19,16,0.18)]">
+          <span className="inline-block -rotate-1 bg-ink px-3 py-0.5 text-mango shadow-[5px_5px_0_rgba(26,23,20,0.18)]">
             listening
           </span>{" "}
           to.
         </h1>
-        <p className="ch-reveal mx-auto mb-9 max-w-lg font-sans text-lg font-semibold text-[#161310]/82">
+        <p className="ch-reveal mx-auto mb-9 max-w-lg font-sans text-lg font-semibold text-ink/82">
           Guest pitches, brand partnerships, speaking enquiries — whatever brought you here, I
           read every message myself.
         </p>
 
         <a
           ref={mailRef}
-          href="mailto:hello@atcrossroads.in"
-          className="ch-reveal magnetic-btn inline-block rounded-2xl border-2 border-[#161310] bg-white px-7 py-4 font-archivo text-[clamp(1.1rem,0.9rem+1vw,1.5rem)] font-black text-[#161310] shadow-[6px_6px_0_#161310]"
+          href="mailto:vrushali@atcrossroads.in"
+          className="ch-reveal magnetic-btn inline-block rounded-2xl border-2 border-ink bg-white px-7 py-4 font-archivo text-[clamp(1.1rem,0.9rem+1vw,1.5rem)] font-black text-ink shadow-[6px_6px_0_#1A1714]"
         >
-          hello@atcrossroads.in
+          vrushali@atcrossroads.in
         </a>
       </div>
     </section>

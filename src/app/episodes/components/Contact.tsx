@@ -17,7 +17,7 @@ export default function Contact() {
     () => {
       if (prefersReducedMotion()) {
         gsap.set(".ct-reveal", { clearProps: "all", opacity: 1, y: 0, scale: 1 });
-        gsap.set(emailRef.current, { clearProps: "all", scale: 1, boxShadow: "6px 6px 0 #FF7E5F" });
+        gsap.set(emailRef.current, { clearProps: "all", scale: 1, boxShadow: "4px 4px 0 #1A1714" });
         gsap.set(darkenRef.current, { opacity: 0 });
         return;
       }
@@ -31,7 +31,9 @@ export default function Contact() {
         },
       });
 
-      tl.to(".ct-reveal", { y: 0, opacity: 1, filter: "blur(0px)", duration: 1, stagger: 0.15 });
+      tl.to(".ct-reveal", { y: 0, opacity: 1, filter: "blur(0px)", duration: 1, stagger: 0.15 }).set(".ct-reveal", {
+        filter: "none",
+      });
 
       // The email itself is the focal point: it becomes the star of the
       // section as it nears the viewport center, then gracefully eases
@@ -44,13 +46,13 @@ export default function Contact() {
         scrub: true,
         onUpdate: (self) => {
           const centered = easeUp(Math.max(0, 1 - Math.abs(self.progress - 0.5) * 2));
-          const shadowSpread = 6 + centered * 5;
-          const glow = centered * 42;
+          const shadowSpread = 6 + centered * 4;
+          const glow = centered * 18;
           gsap.set(emailRef.current, {
-            scale: 1 + centered * 0.18,
-            boxShadow: `${shadowSpread}px ${shadowSpread}px 0 #FF7E5F, 0 0 ${glow}px rgba(255,194,31,${centered * 0.65})`,
+            scale: 1 + centered * 0.08,
+            boxShadow: `${shadowSpread}px ${shadowSpread}px 0 #1A1714, 0 0 ${glow}px rgba(235,166,58,${centered * 0.2})`,
           });
-          gsap.set(darkenRef.current, { opacity: centered * 0.07 });
+          gsap.set(darkenRef.current, { opacity: centered * 0.03 });
         },
       });
     },
@@ -59,21 +61,21 @@ export default function Contact() {
 
   return (
     <section ref={rootRef} className="relative overflow-hidden px-6 py-18.5 text-center sm:px-11">
-      <div ref={darkenRef} aria-hidden className="pointer-events-none absolute inset-0 bg-[#161310] opacity-0" />
+      <div ref={darkenRef} aria-hidden className="pointer-events-none absolute inset-0 bg-ink opacity-0" />
 
       <div className="relative">
-        <div className="ct-reveal reveal-fade mb-4 inline-block -rotate-1 rounded-[7px] bg-[#FFC21F] px-2.5 py-1.5 font-archivo text-xs font-black text-[#161310]">
+        <div className="ct-reveal reveal-fade mb-4 inline-block -rotate-1 rounded-[7px] bg-mango px-2.5 py-1.5 font-archivo text-xs font-black text-ink">
           GET IN TOUCH
         </div>
-        <h2 className="ct-reveal reveal-fade mb-4 font-sans text-xl font-extrabold text-[#161310]/72">
+        <h2 className="ct-reveal reveal-fade mb-4 font-sans text-xl font-extrabold text-ink/72">
           Guest pitches, partnerships &amp; speaking
         </h2>
         <a
           ref={emailRef}
-          href="mailto:hello@atcrossroads.in"
-          className="ct-reveal reveal-fade inline-block rounded-2xl border-2 border-[#161310] bg-[#FFC21F] px-6 py-3 font-archivo text-[clamp(1.5rem,1rem+2.2vw,2.375rem)] font-black text-[#161310] shadow-[6px_6px_0_#FF7E5F] will-change-transform"
+          href="mailto:vrushali@atcrossroads.in"
+          className="ct-reveal reveal-fade inline-block rounded-2xl border-2 border-ink bg-mango px-5 py-2.5 font-archivo text-[clamp(1.2rem,0.9rem+1.8vw,2rem)] font-black text-ink shadow-[4px_4px_0_#1A1714] will-change-transform"
         >
-          hello@atcrossroads.in
+          vrushali@atcrossroads.in
         </a>
       </div>
     </section>

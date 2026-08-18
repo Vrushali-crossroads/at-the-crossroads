@@ -77,7 +77,7 @@ export default function Newsletter() {
     <div className="px-6 sm:px-11">
       <div
         ref={rootRef}
-        className="relative grid grid-cols-1 items-center gap-8 overflow-hidden rounded-[18px] border-2 border-[#161310] bg-[#FF7E5F] p-8 text-white shadow-[8px_8px_0_#161310] will-change-transform sm:p-11.5 lg:grid-cols-[1fr_0.9fr]"
+        className="relative grid grid-cols-1 items-center gap-8 overflow-hidden rounded-[18px] border-2 border-ink bg-teal p-8 text-white shadow-[8px_8px_0_#1A1714] will-change-transform sm:p-11.5 lg:grid-cols-[1fr_0.9fr]"
       >
         <span
           aria-hidden
@@ -97,19 +97,19 @@ export default function Newsletter() {
           </p>
         </div>
         <form
-          className="relative flex gap-2.5 rounded-xl border-2 border-[#161310] bg-white p-1.5 pl-4.5"
+          className="relative flex gap-2.5 rounded-xl border-2 border-ink bg-white p-1.5 pl-4.5"
           onSubmit={(e) => e.preventDefault()}
         >
           <input
             type="email"
             placeholder="your@email.com"
-            className="nl-input min-w-0 flex-1 bg-transparent font-sans text-sm font-semibold text-[#161310] placeholder:text-[#161310]/45 focus:outline-none"
+            className="nl-input min-w-0 flex-1 bg-transparent font-sans text-sm font-semibold text-ink placeholder:text-ink/45 focus:outline-none"
           />
           <span className="nl-join shrink-0">
             <button
               ref={joinRef}
               type="submit"
-              className="magnetic-btn rounded-[9px] border-2 border-[#161310] bg-[#FFC21F] px-5.5 py-3 font-archivo text-[13px] font-black text-[#161310]"
+              className="magnetic-btn rounded-[9px] border-2 border-ink bg-mango px-5.5 py-3 font-archivo text-[13px] font-black text-ink"
             >
               JOIN
             </button>
