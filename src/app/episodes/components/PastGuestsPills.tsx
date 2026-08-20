@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 import { applyCenterEmphasis } from "./scrollFx";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -90,12 +91,21 @@ export default function PastGuestsPills() {
             {g}
           </span>
         ))}
-        <span
-          className="pg-pill inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-4.5 py-2.5 font-archivo text-[13px] font-black text-mango opacity-0 will-change-transform"
+        <a
+          href={YOUTUBE_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pg-pill group relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden whitespace-nowrap rounded-full bg-ink px-4.5 py-2.5 font-archivo text-[13px] font-black text-mango opacity-0 will-change-transform"
           style={{ transform: "translateY(12px) scale(0.75) rotate(-14deg)" }}
         >
-          + 48 MORE
-        </span>
+          <span
+            aria-hidden
+            className="absolute left-1/2 top-1/2 aspect-square w-[220%] -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-mango transition-transform duration-500 ease-out group-hover:scale-100"
+          />
+          <span className="relative z-10 transition-colors duration-500 group-hover:text-ink">
+            + 48 MORE
+          </span>
+        </a>
       </div>
     </section>
   );

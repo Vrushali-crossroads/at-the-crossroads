@@ -37,10 +37,12 @@ const THOUGHTS: Thought[] = [
   },
 ];
 
+// A colored top accent stands in for the border — every card sits on a
+// plain white surface so the accent color is what tells the variants apart.
 const VARIANT_CLASSES: Record<Thought["variant"], string> = {
-  yellow: "bg-mango text-ink",
-  white: "bg-white text-ink",
-  coral: "bg-teal text-white",
+  yellow: "border-t-4 border-mango bg-white text-ink",
+  white: "border-t-4 border-teal bg-white text-ink",
+  coral: "border-t-4 border-coral bg-white text-ink",
 };
 
 // Alternating entrance side/rotation per card index.
@@ -59,11 +61,11 @@ function applyFocusEmphasis(elements: Element[]) {
       scrub: true,
       onUpdate: (self) => {
         const centered = 1 - Math.abs(self.progress - 0.5) * 2; // 1 at center, 0 at edges
-        const shadow = 5 + centered * 4;
+        const spread = 20 + centered * 24;
         gsap.set(el, {
           scale: 0.92 + centered * 0.13,
           opacity: 0.6 + centered * 0.4,
-          boxShadow: `${shadow}px ${shadow}px 0 #1A1714`,
+          boxShadow: `0 ${spread}px ${spread * 2}px -${spread}px rgba(26,23,20,${0.15 + centered * 0.25})`,
         });
       },
     })
@@ -82,7 +84,6 @@ export default function ThoughtsSection() {
           y: 0,
           scale: 1,
           rotate: 0,
-          boxShadow: "6px 6px 0 #1A1714",
         });
         return;
       }
@@ -133,18 +134,14 @@ export default function ThoughtsSection() {
         {THOUGHTS.map((t, i) => (
           <div
             key={t.meta}
-            className={`th-card flex min-h-52.5 flex-col justify-between rounded-[14px] border-2 border-ink p-6 opacity-0 shadow-[6px_6px_0_#1A1714] will-change-transform ${VARIANT_CLASSES[t.variant]}`}
+            className={`th-card flex min-h-52.5 flex-col justify-between rounded-[14px] p-6 opacity-0 will-change-transform ${VARIANT_CLASSES[t.variant]}`}
             style={{ transform: START_TRANSFORM[i] }}
           >
             <p className="font-sans text-xl font-extrabold leading-[1.28]">&ldquo;{t.quote}&rdquo;</p>
             <div className="mt-5 flex items-center justify-between">
               <span className="font-sans text-xs font-bold opacity-70">{t.meta}</span>
               {t.duration ? (
-                <span
-                  className={`rounded-full px-3 py-1.5 font-sans text-xs font-extrabold ${
-                    t.variant === "coral" ? "bg-white text-ink" : "bg-ink text-mango"
-                  }`}
-                >
+                <span className="rounded-full bg-ink px-3 py-1.5 font-sans text-xs font-extrabold text-white">
                   ▶ {t.duration}
                 </span>
               ) : null}

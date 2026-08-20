@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useMagnetic } from "../../components/useMagnetic";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -128,12 +129,21 @@ export default function SunGuests() {
             {g}
           </span>
         ))}
-        <span
-          className="sg-pill rounded-full bg-mango px-4.5 py-2.5 font-sans text-sm font-semibold text-ink opacity-0"
+        <a
+          href={YOUTUBE_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sg-pill group relative isolate inline-flex items-center overflow-hidden rounded-full bg-mango px-4.5 py-2.5 font-sans text-sm font-semibold text-ink opacity-0"
           style={{ transform: `translate(${GUESTS.length % 2 === 0 ? -30 : 30}px, 10px)` }}
         >
-          + 48 more
-        </span>
+          <span
+            aria-hidden
+            className="absolute left-1/2 top-1/2 aspect-square w-[220%] -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-ink transition-transform duration-500 ease-out group-hover:scale-100"
+          />
+          <span className="relative z-10 transition-colors duration-500 group-hover:text-mango">
+            + 48 more
+          </span>
+        </a>
       </div>
 
       <div

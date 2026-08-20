@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "../../components/usePrefersReducedMotion";
+import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
 import type { Episode } from "@/lib/episodes";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -98,9 +99,20 @@ export default function LatestDrops({ episodes }: Readonly<{ episodes: Episode[]
         <h2 className="reveal-fade font-archivo text-[clamp(1.75rem,1.2rem+2.5vw,2.5rem)] font-black leading-none uppercase">
           Latest <span className="inline-block -rotate-1 bg-mango px-2">drops</span>
         </h2>
-        <span className="reveal-fade rounded-[9px] bg-ink px-4 py-2.5 font-archivo text-[13px] font-black text-mango">
-          ALL 55 →
-        </span>
+        <a
+          href={YOUTUBE_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="reveal-fade group relative isolate overflow-hidden rounded-[9px] bg-ink px-4 py-2.5 font-archivo text-[13px] font-black text-mango"
+        >
+          <span
+            aria-hidden
+            className="absolute left-1/2 top-1/2 aspect-square w-[220%] -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-mango transition-transform duration-500 ease-out group-hover:scale-100"
+          />
+          <span className="relative z-10 transition-colors duration-500 group-hover:text-ink">
+            ALL 55 →
+          </span>
+        </a>
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -110,12 +122,12 @@ export default function LatestDrops({ episodes }: Readonly<{ episodes: Episode[]
             href={ep.link || undefined}
             target={ep.link ? "_blank" : undefined}
             rel={ep.link ? "noopener noreferrer" : undefined}
-            className="ld-card group block overflow-hidden rounded-[14px] border-2 border-ink bg-white opacity-0 shadow-[6px_6px_0_#1A1714] transition-shadow duration-300 hover:shadow-[9px_9px_0_#1A1714,0_0_28px_rgba(235,166,58,0.45)] will-change-transform"
+            className="ld-card group block overflow-hidden rounded-[14px] border border-ink/10 bg-white opacity-0 transition-shadow duration-300 hover:shadow-[0_20px_40px_-24px_rgba(26,23,20,0.35)] will-change-transform"
             style={{ transform: "translateY(50px)" }}
             onMouseEnter={handleCardEnter}
             onMouseLeave={handleCardLeave}
           >
-            <div className="ld-thumb-wrap relative aspect-video overflow-hidden border-b-2 border-ink will-change-transform">
+            <div className="ld-thumb-wrap relative aspect-video overflow-hidden will-change-transform">
               <Image
                 src={ep.image}
                 alt={ep.title}
@@ -159,7 +171,7 @@ export default function LatestDrops({ episodes }: Readonly<{ episodes: Episode[]
             href={ep.link || undefined}
             target={ep.link ? "_blank" : undefined}
             rel={ep.link ? "noopener noreferrer" : undefined}
-            className="ld-strip relative block aspect-video overflow-hidden rounded-[10px] border-2 border-ink opacity-0 will-change-transform"
+            className="ld-strip relative block aspect-video overflow-hidden rounded-xl opacity-0 will-change-transform"
             style={{ transform: "translateY(30px)" }}
           >
             <div className="ld-thumb-wrap absolute inset-0 will-change-transform">

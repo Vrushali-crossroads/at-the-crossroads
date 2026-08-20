@@ -77,7 +77,7 @@ export default function Newsletter() {
     <div className="px-6 sm:px-11">
       <div
         ref={rootRef}
-        className="relative grid grid-cols-1 items-center gap-8 overflow-hidden rounded-[18px] border-2 border-ink bg-teal p-8 text-white shadow-[8px_8px_0_#1A1714] will-change-transform sm:p-11.5 lg:grid-cols-[1fr_0.9fr]"
+        className="relative grid grid-cols-1 items-center gap-8 overflow-hidden rounded-[18px] bg-teal p-8 text-white shadow-[0_24px_48px_-20px_rgba(26,23,20,0.4)] will-change-transform sm:p-11.5 lg:grid-cols-[1fr_0.9fr]"
       >
         <span
           aria-hidden
@@ -97,7 +97,7 @@ export default function Newsletter() {
           </p>
         </div>
         <form
-          className="relative flex gap-2.5 rounded-xl border-2 border-ink bg-white p-1.5 pl-4.5"
+          className="relative flex gap-2.5 rounded-xl bg-white p-1.5 pl-4.5"
           onSubmit={(e) => e.preventDefault()}
         >
           <input
@@ -109,7 +109,7 @@ export default function Newsletter() {
             <button
               ref={joinRef}
               type="submit"
-              className="magnetic-btn rounded-[9px] border-2 border-ink bg-mango px-5.5 py-3 font-archivo text-[13px] font-black text-ink"
+              className="magnetic-btn rounded-[9px] bg-mango px-5.5 py-3 font-archivo text-[13px] font-black text-ink"
             >
               JOIN
             </button>
