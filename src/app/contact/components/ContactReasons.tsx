@@ -11,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 type Reason = {
   tag: string;
   tagClass: string;
+  accentClass: string;
   title: string;
   blurb: string;
 };
@@ -19,18 +20,21 @@ const REASONS: Reason[] = [
   {
     tag: "GUEST PITCH",
     tagClass: "bg-mango text-ink",
+    accentClass: "border-mango",
     title: "Come on the show",
     blurb: "Tell me the turning point you'd talk about, and why it matters to you.",
   },
   {
     tag: "BRAND PARTNERSHIP",
     tagClass: "bg-teal text-white",
+    accentClass: "border-teal",
     title: "Sponsor an episode",
     blurb: "Reach a listenership that shows up for honest, unhurried conversation.",
   },
   {
     tag: "SPEAKING",
     tagClass: "bg-teal text-white",
+    accentClass: "border-coral",
     title: "Bring me to your stage",
     blurb: "Keynotes and panels on leadership, resilience, and the lessons that stick.",
   },
@@ -73,7 +77,7 @@ export default function ContactReasons() {
         {REASONS.map((r, i) => (
           <div
             key={r.title}
-            className="cr-card overflow-hidden rounded-[14px] border-2 border-ink bg-white p-6.5 opacity-0 shadow-[6px_6px_0_#1A1714] transition-transform duration-300 hover:-translate-y-1"
+            className={`cr-card overflow-hidden rounded-[14px] border-t-4 bg-white p-6.5 opacity-0 shadow-[0_20px_40px_-24px_rgba(26,23,20,0.35)] transition-transform duration-300 hover:-translate-y-1 ${r.accentClass}`}
             style={{ transform: `translate(${CARD_X[i % CARD_X.length]}px, 34px)` }}
           >
             <div

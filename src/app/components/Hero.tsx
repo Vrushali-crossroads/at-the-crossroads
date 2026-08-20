@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { useMagnetic } from "./useMagnetic";
 import { prefersReducedMotion } from "./usePrefersReducedMotion";
 import { YOUTUBE_CHANNEL_URL } from "@/lib/social";
+import MarqueeTape from "./MarqueeTape";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -16,82 +17,16 @@ function AnimatedWords({ text, className = "" }: { text: string; className?: str
   return (
     <>
       {words.map((word, i) => (
-        <span key={i} className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]">
-          <span className={`hero-word inline-block origin-bottom-left ${className}`}>
-            {word}
-            {i < words.length - 1 ? " " : ""}
+        <span key={i}>
+          <span className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]">
+            <span className={`hero-word inline-block origin-bottom-left ${className}`}>
+              {word}
+            </span>
           </span>
+          {i < words.length - 1 ? " " : ""}
         </span>
       ))}
     </>
-  );
-}
-
-const TAPE_ITEMS = ["LEADERSHIP", "RESILIENCE", "ENTREPRENEURSHIP", "CHANGEMAKERS"];
-
-function TapeMarquee() {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const tweenRef = useRef<gsap.core.Tween | null>(null);
-
-  useGSAP(
-    () => {
-      tweenRef.current = gsap.to(trackRef.current, {
-        xPercent: -50,
-        duration: 22,
-        ease: "none",
-        repeat: -1,
-        paused: true,
-      });
-
-      gsap.fromTo(
-        wrapRef.current,
-        { clipPath: "inset(0 100% 0 0)" },
-        {
-          clipPath: "inset(0 0% 0 0)",
-          duration: 1.1,
-          ease: "power4.inOut",
-          onComplete: () => tweenRef.current?.play(),
-          scrollTrigger: {
-            trigger: wrapRef.current,
-            start: "top 92%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
-
-      gsap.fromTo(
-        trackRef.current,
-        { skewX: -8 },
-        { skewX: 0, duration: 1.1, ease: "power4.inOut" }
-      );
-    },
-    { scope: wrapRef }
-  );
-
-  return (
-    <div
-      ref={wrapRef}
-      className="overflow-hidden bg-teal py-3.5"
-      style={{ clipPath: "inset(0 100% 0 0)" }}
-      onMouseEnter={() => tweenRef.current?.pause()}
-      onMouseLeave={() => tweenRef.current?.play()}
-    >
-      <div ref={trackRef} className="flex w-max whitespace-nowrap">
-        {[0, 1].map((copy) => (
-          <div key={copy} className="flex items-center" aria-hidden={copy === 1}>
-            {TAPE_ITEMS.map((item) => (
-              <span key={item} className="flex items-center">
-                <span className="px-6 font-sans text-sm font-semibold tracking-[0.14em] text-cream">
-                  {item}
-                </span>
-                <span className="px-6 text-mango">&#10022;</span>
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -402,7 +337,7 @@ export default function Hero() {
         </div>
       </div>
     </section>
-    <TapeMarquee />
+    <MarqueeTape />
     </>
   );
 }

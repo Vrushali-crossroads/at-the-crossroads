@@ -10,6 +10,7 @@
   --color-teal: #2b4e55;
   --color-mango: #eba63a;
   --color-mango-light: #f4c56b;
+  --color-coral: #e2725b;
   --color-white: #ffffff;
 
   /* type scale (exact px pulled from the mockup, scaled fluidly) */
@@ -50,6 +51,7 @@
   --color-teal: var(--color-teal);
   --color-mango: var(--color-mango);
   --color-mango-light: var(--color-mango-light);
+  --color-coral: var(--color-coral);
   --color-white: var(--color-white);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
